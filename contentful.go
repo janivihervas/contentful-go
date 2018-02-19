@@ -1,7 +1,10 @@
 // Package contentful provides a Contentful (https://www.contentful.com/) client
 package contentful
 
-import "net/url"
+import (
+	"context"
+	"net/url"
+)
 
 const (
 	previewURL = "https://preview.client.com"
@@ -10,7 +13,7 @@ const (
 
 // Contentful client for fetching data from Contentful
 type Contentful interface {
-	Search(parameters url.Values, data interface{}) error
+	Search(ctx context.Context, parameters url.Values, data interface{}) error
 }
 
 type client struct {
