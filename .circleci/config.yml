@@ -1,0 +1,62 @@
+# Environment variables
+# PUSHBACK_TOKEN: Personal access token from Github, needs repo access: https://github.com/settings/tokens
+# PUSHBACK_USER_EMAIL: Email of the user profile used as autobot
+# PUSHBACK_USER_NAME: Github user name used as autobot
+version: 2
+machine:
+  timezone: Europe/Helsinki
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.10.0
+    working_directory: /go/src/github.com/janivihervas/contentful-go
+    steps:
+      - checkout
+      - run:
+          name: Setup git
+          command: |
+            git remote add pushback https://$PUSHBACK_TOKEN@github.com/janivihervas/contentful-go.git
+            git config --global user.name $PUSHBACK_USER_NAME
+            git config --global user.email $PUSHBACK_USER_EMAIL
+      - run:
+          name: Install dep
+          command: |
+            DEP_VERSION=0.4.1
+            curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o $GOPATH/bin/dep
+            chmod +x $GOPATH/bin/dep
+      - restore_cache:
+          keys:
+            - v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
+      - run: make install
+      - save_cache:
+          key: v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
+      - run: make setup
+      - run:
+          name: make format
+          command: |
+            if [[ $CIRCLE_BRANCH != "master" ]]; then
+              make format
+              if [[ $(git status --porcelain) ]]; then
+                git add --all
+                git commit -m "AUTOMATIC BOT: Format"
+              fi
+            fi
+      - run:
+          name: make lint-parallel
+          command: make lint-parallel
+      - run: make test-ci
+      - run:
+          name: Upload coverage to codecov.io
+          command: bash <(curl -s https://codecov.io/bash)
+      - run:
+          name: Push autobot changes
+          command: |
+            if [[ $CIRCLE_BRANCH != "master" ]]; then
+              if [[ $(git log origin/$CIRCLE_BRANCH..$CIRCLE_BRANCH) ]]; then
+                echo "Pushing autobot fixes"
+                git push --set-upstream pushback $CIRCLE_BRANCH
+                exit 1
+              fi
+            fi

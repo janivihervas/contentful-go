@@ -1,2 +1,3 @@
 # contentful-go
-Contentful SDK for go
+
+Simple Contentful SDK for Go
