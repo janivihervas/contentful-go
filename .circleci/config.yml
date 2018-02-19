@@ -28,6 +28,16 @@ jobs:
           keys:
             - v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
       - run: make install
+      - run:
+          name: make install
+          command: |
+            make install
+            if [[ $CIRCLE_BRANCH != "master" ]]; then
+              if [[ $(git status --porcelain) ]]; then
+                git add --all
+                git commit -m "AUTOMATIC BOT: Install"
+              fi
+            fi
       - save_cache:
           key: v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
           paths:
