@@ -27,7 +27,16 @@ jobs:
       - restore_cache:
           keys:
             - v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
-      - run: make install
+      - run:
+          name: make install
+          command: |
+            make install
+            if [[ $CIRCLE_BRANCH != "master" ]]; then
+              if [[ $(git status --porcelain) ]]; then
+                git add --all
+                git commit -m "AUTOMATIC BOT: Install"
+              fi
+            fi
       - save_cache:
           key: v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
           paths:
@@ -44,8 +53,8 @@ jobs:
               fi
             fi
       - run:
-          name: make lint-parallel
-          command: make lint-parallel
+          name: make lint
+          command: make --just-print lint-sync | parallel -k
       - run: make test-ci
       - run:
           name: Upload coverage to codecov.io
