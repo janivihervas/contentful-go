@@ -42,9 +42,6 @@ jobs:
           paths:
             - vendor
       - run: make setup
-      - run: |
-          ls -la $GOPATH/bin
-          which staticcheck
       - run:
           name: make format
           command: |
