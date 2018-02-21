@@ -27,7 +27,6 @@ jobs:
       - restore_cache:
           keys:
             - v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
-      - run: make install
       - run:
           name: make install
           command: |
