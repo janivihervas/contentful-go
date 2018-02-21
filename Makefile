@@ -1,4 +1,3 @@
-SHELL=/bin/bash
 GO_PACKAGES := `go list ./... | egrep -v "/vendor/"`
 GO_FILES := `find . -name "*.go" -not -path "./vendor/*" -not -path ".git/*"`
 GO_FILES_NO_TEST := `find . -name "*.go" -not -path "./vendor/*" -not -path ".git/*" -not -name "*_test.go"`
