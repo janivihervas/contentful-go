@@ -5,13 +5,14 @@ GO_FILES_NO_TEST := `find . -name "*.go" -not -path "./vendor/*" -not -path ".gi
 GO_TOOLS := golang.org/x/tools/cmd/goimports \
             github.com/golang/lint/golint \
             honnef.co/go/tools/cmd/staticcheck \
-            github.com/fzipp/gocyclo \
-            honnef.co/go/tools/cmd/unused \
-            github.com/kisielk/errcheck \
             honnef.co/go/tools/cmd/gosimple \
+            honnef.co/go/tools/cmd/unused \
+            github.com/fzipp/gocyclo \
+            github.com/kisielk/errcheck \
             github.com/mdempsky/unconvert \
             github.com/alexkohler/nakedret \
-            mvdan.cc/unparam
+            mvdan.cc/unparam \
+            mvdan.cc/interfacer
 
 .PHONY: install
 install:
