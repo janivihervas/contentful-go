@@ -1,3 +1,4 @@
+SHELL=/bin/bash
 GO_PACKAGES := `go list ./... | egrep -v "/vendor/"`
 GO_FILES := `find . -name "*.go" -not -path "./vendor/*" -not -path ".git/*"`
 GO_FILES_NO_TEST := `find . -name "*.go" -not -path "./vendor/*" -not -path ".git/*" -not -name "*_test.go"`
@@ -9,11 +10,8 @@ GO_TOOLS := golang.org/x/tools/cmd/goimports \
             github.com/kisielk/errcheck \
             honnef.co/go/tools/cmd/gosimple \
             github.com/mdempsky/unconvert \
-            github.com/GoASTScanner/gas/cmd/gas/... \
             github.com/alexkohler/nakedret \
             mvdan.cc/unparam
-#            Uncomment if you import a db driver
-#            github.com/stripe/safesql
 
 .PHONY: install
 install:
@@ -28,8 +26,8 @@ format:
 	gofmt -s -w -e $(GO_FILES)
 	goimports -w -l -e $(GO_FILES)
 
-.PHONY: lint
-lint:
+.PHONY: lint-sync
+lint-sync:
 	go vet ./...
 	staticcheck $(GO_PACKAGES)
 	golint -set_exit_status $(GO_PACKAGES)
@@ -41,13 +39,10 @@ lint:
 	unconvert $(GO_PACKAGES)
 	nakedret $(GO_PACKAGES)
 	unparam $(GO_PACKAGES)
-#   Uncomment if you import a db driver
-#	safesql $(GO_PACKAGES)
-	gas -quiet ./...
 
-.PHONY: lint-parallel
-lint-parallel:
-	shell make --just-print lint | parallel -k
+.PHONY: lint
+lint:
+	make --just-print lint-sync | parallel -k
 
 .PHONY: test
 test:

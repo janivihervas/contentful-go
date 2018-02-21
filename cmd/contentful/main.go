@@ -50,7 +50,11 @@ func main() {
 	cms := contentful.New(token, spaceID, preview)
 
 	result := make(map[string]interface{})
-	cms.Search(context.Background(), parameters, &result)
+	err := cms.Search(context.Background(), parameters, &result)
+	if err != nil {
+		fmt.Println("Client returned an error:", err)
+		os.Exit(1)
+	}
 
 	bytes, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {

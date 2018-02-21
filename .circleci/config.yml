@@ -53,9 +53,7 @@ jobs:
                 git commit -m "AUTOMATIC BOT: Format"
               fi
             fi
-      - run:
-          name: make lint-parallel
-          command: make lint-parallel
+      - run: make lint
       - run: make test-ci
       - run:
           name: Upload coverage to codecov.io

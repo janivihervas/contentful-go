@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	previewURL = "https://preview.client.com"
-	cdnURL     = "https://cdn.client.com"
+	previewURL = "https://preview.contentful.com"
+	cdnURL     = "https://cdn.contentful.com"
 )
 
 // Contentful client for fetching data from Contentful
