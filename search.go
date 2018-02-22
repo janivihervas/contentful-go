@@ -66,19 +66,11 @@ func (cms *Contentful) Search(ctx context.Context, parameters url.Values, data i
 		return errors.New("no items returned")
 	}
 
-	flattenedItems := make([]map[string]interface{}, response.Total)
-	for i, item := range response.Items {
-		flattenedFields := make(map[string]interface{}, len(item.Fields))
+	appendIncludes(&response)
 
-		for key, field := range item.Fields {
-			flattenedField, err := flattenField(response, field)
-			if err != nil {
-				return err
-			}
-			flattenedFields[key] = flattenedField
-		}
-
-		flattenedItems[i] = flattenedFields
+	flattenedItems, err := flattenItems(response)
+	if err != nil {
+		return err
 	}
 
 	bytes, err := json.Marshal(flattenedItems)
@@ -87,4 +79,11 @@ func (cms *Contentful) Search(ctx context.Context, parameters url.Values, data i
 	}
 
 	return json.Unmarshal(bytes, data)
+}
+func appendIncludes(response *searchResults) {
+	for _, item := range response.Items {
+		if item.Sys.Type == linkTypeEntry {
+			response.Includes.Entry = append(response.Includes.Entry, item)
+		}
+	}
 }
