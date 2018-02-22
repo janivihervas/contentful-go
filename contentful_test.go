@@ -11,17 +11,10 @@ func TestNew(t *testing.T) {
 
 	cms := New("token", "space", false)
 
-	c, ok := cms.(*client)
-
-	assert.True(ok)
-	assert.Equal("token", c.token)
-	assert.Equal("space", c.spaceID)
-	assert.Equal(cdnURL, c.url)
+	assert.Equal("token", cms.token)
+	assert.Equal("space", cms.spaceID)
+	assert.Equal(cdnURL, cms.url)
 
 	cms = New("token", "space", true)
-
-	c, ok = cms.(*client)
-
-	assert.True(ok)
-	assert.Equal(previewURL, c.url)
+	assert.Equal(previewURL, cms.url)
 }
