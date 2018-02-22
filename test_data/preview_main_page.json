@@ -1,0 +1,233 @@
+{
+  "sys": {
+    "type": "Array"
+  },
+  "total": 1,
+  "skip": 0,
+  "limit": 100,
+  "items": [
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "spaceID"
+          }
+        },
+        "type": "Entry",
+        "id": "2Cbt07njicqO4wSYCQ8CeK",
+        "contentType": {
+          "sys": {
+            "type": "Link",
+            "linkType": "ContentType",
+            "id": "page"
+          }
+        },
+        "revision": 2,
+        "createdAt": "2018-02-20T18:14:49.006Z",
+        "updatedAt": "2018-02-20T18:24:07.281Z",
+        "locale": "en-US"
+      },
+      "fields": {
+        "title": "Main page",
+        "banner": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Asset",
+            "id": "2BNT5Xj0CsgUOSMkKysYKq"
+          }
+        },
+        "subPages": [
+          {
+            "sys": {
+              "type": "Link",
+              "linkType": "Entry",
+              "id": "FcAxxzogmsOMcc0kac6Iu"
+            }
+          },
+          {
+            "sys": {
+              "type": "Link",
+              "linkType": "Entry",
+              "id": "5CVt4s6uvS0cuym4wmWg2k"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "includes": {
+    "Entry": [
+      {
+        "sys": {
+          "space": {
+            "sys": {
+              "type": "Link",
+              "linkType": "Space",
+              "id": "spaceID"
+            }
+          },
+          "type": "Entry",
+          "id": "5CVt4s6uvS0cuym4wmWg2k",
+          "contentType": {
+            "sys": {
+              "type": "Link",
+              "linkType": "ContentType",
+              "id": "page"
+            }
+          },
+          "revision": 1,
+          "createdAt": "2018-02-20T18:19:01.359Z",
+          "updatedAt": "2018-02-20T18:23:36.818Z",
+          "locale": "en-US"
+        },
+        "fields": {
+          "title": "Not published page",
+          "banner": {
+            "sys": {
+              "type": "Link",
+              "linkType": "Asset",
+              "id": "3hBPd2try88AaWsMMU2Ga"
+            }
+          }
+        }
+      },
+      {
+        "sys": {
+          "space": {
+            "sys": {
+              "type": "Link",
+              "linkType": "Space",
+              "id": "spaceID"
+            }
+          },
+          "type": "Entry",
+          "id": "FcAxxzogmsOMcc0kac6Iu",
+          "contentType": {
+            "sys": {
+              "type": "Link",
+              "linkType": "ContentType",
+              "id": "page"
+            }
+          },
+          "revision": 1,
+          "createdAt": "2018-02-20T18:15:09.146Z",
+          "updatedAt": "2018-02-20T18:19:32.990Z",
+          "locale": "en-US"
+        },
+        "fields": {
+          "title": "Sub page",
+          "banner": {
+            "sys": {
+              "type": "Link",
+              "linkType": "Asset",
+              "id": "3ReVDbQQfmKY60Y6CCwAg6"
+            }
+          }
+        }
+      }
+    ],
+    "Asset": [
+      {
+        "sys": {
+          "space": {
+            "sys": {
+              "type": "Link",
+              "linkType": "Space",
+              "id": "spaceID"
+            }
+          },
+          "type": "Asset",
+          "id": "2BNT5Xj0CsgUOSMkKysYKq",
+          "revision": 2,
+          "createdAt": "2018-02-20T18:14:18.301Z",
+          "updatedAt": "2018-02-20T18:17:30.570Z",
+          "locale": "en-US"
+        },
+        "fields": {
+          "title": "Green",
+          "description": "Green image",
+          "file": {
+            "url": "//images.contentful.com/spaceID/green.png",
+            "details": {
+              "size": 1508,
+              "image": {
+                "width": 100,
+                "height": 100
+              }
+            },
+            "fileName": "green.png",
+            "contentType": "image/png"
+          }
+        }
+      },
+      {
+        "sys": {
+          "space": {
+            "sys": {
+              "type": "Link",
+              "linkType": "Space",
+              "id": "spaceID"
+            }
+          },
+          "type": "Asset",
+          "id": "3ReVDbQQfmKY60Y6CCwAg6",
+          "revision": 1,
+          "createdAt": "2018-02-20T18:15:19.743Z",
+          "updatedAt": "2018-02-20T18:16:39.688Z",
+          "locale": "en-US"
+        },
+        "fields": {
+          "title": "Orange",
+          "description": "Orange image",
+          "file": {
+            "url": "//images.contentful.com/spaceID/orange.png",
+            "details": {
+              "size": 1506,
+              "image": {
+                "width": 100,
+                "height": 100
+              }
+            },
+            "fileName": "orange.png",
+            "contentType": "image/png"
+          }
+        }
+      },
+      {
+        "sys": {
+          "space": {
+            "sys": {
+              "type": "Link",
+              "linkType": "Space",
+              "id": "spaceID"
+            }
+          },
+          "type": "Asset",
+          "id": "3hBPd2try88AaWsMMU2Ga",
+          "revision": 1,
+          "createdAt": "2018-02-20T18:17:38.568Z",
+          "updatedAt": "2018-02-20T18:17:58.035Z",
+          "locale": "en-US"
+        },
+        "fields": {
+          "title": "Blue",
+          "description": "Blue image",
+          "file": {
+            "url": "//images.contentful.com/spaceID/blue.png",
+            "details": {
+              "size": 1504,
+              "image": {
+                "width": 100,
+                "height": 100
+              }
+            },
+            "fileName": "blue.png",
+            "contentType": "image/png"
+          }
+        }
+      }
+    ]
+  }
+}
