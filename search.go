@@ -21,13 +21,13 @@ import (
 //	defer cancel()
 //
 //	page := Page{}
-//  params := url.Values{
-//    "content_type": []string{"page"}
-//  }
+//	params := url.Values{
+//		"content_type": []string{"page"}
+//	}
 //
 //	err := cms.Search(ctx, params, &page)
 //	if err != nil {
-//	  // Handle error
+//		// Handle error
 //	}
 func (cms *Contentful) Search(ctx context.Context, parameters url.Values, data interface{}) error {
 	if parameters == nil {
