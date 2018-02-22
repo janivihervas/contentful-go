@@ -3,6 +3,7 @@ package contentful
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -55,5 +56,35 @@ func (cms *Contentful) Search(ctx context.Context, parameters url.Values, data i
 		return fmt.Errorf("non-ok status code: %d", resp.StatusCode)
 	}
 
-	return json.NewDecoder(resp.Body).Decode(data)
+	response := searchResults{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return err
+	}
+
+	if response.Total == 0 || len(response.Items) == 0 {
+		return errors.New("no items returned")
+	}
+
+	flattenedItems := make([]map[string]interface{}, response.Total)
+	for i, item := range response.Items {
+		flattenedFields := make(map[string]interface{}, len(item.Fields))
+
+		for key, field := range item.Fields {
+			flattenedField, err := flattenField(response, field)
+			if err != nil {
+				return err
+			}
+			flattenedFields[key] = flattenedField
+		}
+
+		flattenedItems[i] = flattenedFields
+	}
+
+	bytes, err := json.Marshal(flattenedItems)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(bytes, data)
 }
