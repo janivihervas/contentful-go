@@ -31,33 +31,7 @@ import (
 //		// Handle error
 //	}
 func (cms *Contentful) GetMany(ctx context.Context, parameters url.Values, data interface{}) error {
-	if parameters == nil {
-		parameters = url.Values{}
-	}
-	parameters.Set("include", "10")
-
-	u := cms.url + "/spaces/" + cms.spaceID + "/entries?" + parameters.Encode()
-	req, err := http.NewRequest("GET", u, nil)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Add("Authorization", "Bearer "+cms.token)
-	req = req.WithContext(ctx)
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-ok status code: %d", resp.StatusCode)
-	}
-
-	response := searchResults{}
-	err = json.NewDecoder(resp.Body).Decode(&response)
+	response, err := cms.search(ctx, parameters)
 	if err != nil {
 		return err
 	}
@@ -80,6 +54,74 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters url.Values, data 
 
 	return json.Unmarshal(bytes, data)
 }
+
+// GetOne entry from Contentful.
+//
+// Works exactly the same way as GetMany, except will be able to marshal
+// a search result of one item to a struct instead of a slice of length of one item.
+// Will return an error if there is not exactly one entry returned
+func (cms *Contentful) GetOne(ctx context.Context, parameters url.Values, data interface{}) error {
+	response, err := cms.search(ctx, parameters)
+	if err != nil {
+		return err
+	}
+
+	if response.Total != 1 || len(response.Items) != 1 {
+		return fmt.Errorf("too many or too few items returned: %d", response.Total)
+	}
+
+	appendIncludes(&response)
+
+	flattenedItem, err := flattenItem(response.Includes, response.Items[0])
+	if err != nil {
+		return err
+	}
+
+	bytes, err := json.Marshal(flattenedItem)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(bytes, data)
+}
+
+func (cms *Contentful) search(ctx context.Context, parameters url.Values) (searchResults, error) {
+	response := searchResults{}
+	if parameters == nil {
+		parameters = url.Values{}
+	}
+	parameters.Set("include", "10")
+
+	u := cms.url + "/spaces/" + cms.spaceID + "/entries?" + parameters.Encode()
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		return response, err
+	}
+
+	req.Header.Add("Authorization", "Bearer "+cms.token)
+	req = req.WithContext(ctx)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return response, err
+	}
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return response, fmt.Errorf("non-ok status code: %d", resp.StatusCode)
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return response, err
+	}
+
+	return response, nil
+}
+
+// appendIncludes will append current search results to includes object,
+// because Contentful doesn't duplicate items from search results to includes.
 func appendIncludes(response *searchResults) {
 	for _, item := range response.Items {
 		if item.Sys.Type == linkTypeEntry {
