@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-// Search entries from Contentful.
+// GetMany entries from Contentful.
 //
 // Example usage:
 //	type Page struct {
@@ -21,16 +21,16 @@ import (
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
 //	defer cancel()
 //
-//	page := Page{}
+//	pages := make([]Page{}, 1)
 //	params := url.Values{
 //		"content_type": []string{"page"}
 //	}
 //
-//	err := cms.Search(ctx, params, &page)
+//	err := cms.GetMany(ctx, params, &pages)
 //	if err != nil {
 //		// Handle error
 //	}
-func (cms *Contentful) Search(ctx context.Context, parameters url.Values, data interface{}) error {
+func (cms *Contentful) GetMany(ctx context.Context, parameters url.Values, data interface{}) error {
 	if parameters == nil {
 		parameters = url.Values{}
 	}
@@ -68,7 +68,7 @@ func (cms *Contentful) Search(ctx context.Context, parameters url.Values, data i
 
 	appendIncludes(&response)
 
-	flattenedItems, err := flattenItems(response)
+	flattenedItems, err := flattenItems(response.Includes, response.Items)
 	if err != nil {
 		return err
 	}

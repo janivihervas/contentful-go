@@ -50,7 +50,7 @@ func main() {
 	cms := contentful.New(token, spaceID, preview)
 
 	result := make([]map[string]interface{}, 1)
-	err := cms.Search(context.Background(), parameters, &result)
+	err := cms.GetMany(context.Background(), parameters, &result)
 	if err != nil {
 		fmt.Println("Client returned an error:", err)
 		os.Exit(1)

@@ -48,10 +48,10 @@ type searchResults struct {
 	Includes includes `json:"includes"`
 }
 
-func flattenItems(response searchResults) ([]map[string]interface{}, error) {
-	flattenedItems := make([]map[string]interface{}, response.Total)
-	for i, item := range response.Items {
-		flattenedItem, err := flattenItem(response.Includes, item.Fields)
+func flattenItems(includes includes, items []item) ([]map[string]interface{}, error) {
+	flattenedItems := make([]map[string]interface{}, len(items))
+	for i, item := range items {
+		flattenedItem, err := flattenItem(includes, item)
 		if err != nil {
 			return flattenedItems, err
 		}
@@ -62,10 +62,10 @@ func flattenItems(response searchResults) ([]map[string]interface{}, error) {
 	return flattenedItems, nil
 }
 
-func flattenItem(includes includes, fields map[string]interface{}) (map[string]interface{}, error) {
-	flattenedFields := make(map[string]interface{}, len(fields))
+func flattenItem(includes includes, item item) (map[string]interface{}, error) {
+	flattenedFields := make(map[string]interface{}, len(item.Fields))
 
-	for key, field := range fields {
+	for key, field := range item.Fields {
 		flattenedField, err := flattenField(includes, field)
 		if err != nil {
 			return flattenedFields, err
@@ -159,7 +159,7 @@ func flattenField(includes includes, field interface{}) (interface{}, error) {
 		}
 
 		// Field is not a reference but an object. Flatten like as if it were an item in search result.
-		flattenedItem, err := flattenItem(includes, t)
+		flattenedItem, err := flattenItem(includes, item{Fields: t})
 		if err != nil {
 			return field, err
 		}
