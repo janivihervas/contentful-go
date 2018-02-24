@@ -113,11 +113,8 @@ func (cms *Contentful) search(ctx context.Context, parameters url.Values) (searc
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&response)
-	if err != nil {
-		return response, err
-	}
 
-	return response, nil
+	return response, err
 }
 
 // appendIncludes will append current search results to includes object,
