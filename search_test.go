@@ -12,6 +12,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestContentful_GetServerFails(t *testing.T) {
+	t.Parallel()
+	var (
+		cms = Contentful{
+			token:   "token",
+			spaceID: "spaceID",
+		}
+		ctx    = context.Background()
+		result = make([]map[string]interface{}, 1)
+	)
+
+	err := cms.GetMany(ctx, nil, &result)
+	assert.NotNil(t, err)
+
+	err = cms.GetOne(ctx, nil, &result)
+	assert.NotNil(t, err)
+}
+
 func TestContentful_search(t *testing.T) {
 	t.Parallel()
 
