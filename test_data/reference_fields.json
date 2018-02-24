@@ -1,0 +1,9 @@
+{
+  "reference": {
+    "sys": {
+      "type": "Link",
+      "linkType": "Entry",
+      "id": "id"
+    }
+  }
+}
