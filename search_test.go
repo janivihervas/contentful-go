@@ -9,6 +9,8 @@ import (
 
 	"io/ioutil"
 
+	"encoding/json"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,6 +28,44 @@ func TestContentful_GetServerFails(t *testing.T) {
 	err := cms.GetMany(ctx, nil, &result)
 	assert.NotNil(t, err)
 
+	err = cms.GetOne(ctx, nil, &result)
+	assert.NotNil(t, err)
+}
+
+func TestContentful_GetWrongTotal(t *testing.T) {
+	t.Parallel()
+
+	var (
+		response = searchResults{
+			Total: 0,
+		}
+		server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			err := json.NewEncoder(w).Encode(response)
+			assert.Nil(t, err)
+			w.WriteHeader(http.StatusOK)
+		}))
+		cms = Contentful{
+			token:   "token",
+			spaceID: "spaceID",
+			url:     server.URL,
+		}
+		ctx    = context.Background()
+		result = make([]map[string]interface{}, 1)
+	)
+	defer server.Close()
+
+	err := cms.GetMany(ctx, nil, &result)
+	assert.NotNil(t, err)
+	err = cms.GetOne(ctx, nil, &result)
+	assert.NotNil(t, err)
+
+	response.Total = 2
+	err = cms.GetOne(ctx, nil, &result)
+	assert.NotNil(t, err)
+
+	response.Total = 1
+	err = cms.GetMany(ctx, nil, &result)
+	assert.NotNil(t, err)
 	err = cms.GetOne(ctx, nil, &result)
 	assert.NotNil(t, err)
 }
