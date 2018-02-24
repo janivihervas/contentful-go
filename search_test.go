@@ -83,3 +83,44 @@ func TestContentful_search(t *testing.T) {
 		assert.Equal(tt, 2, len(response.Items))
 	})
 }
+
+func TestAppendIncludes(t *testing.T) {
+	t.Parallel()
+
+	response := searchResults{
+		Items: []item{},
+		Includes: includes{
+			Entry: []item{
+				{
+					Sys: itemInfo{
+						ID: "1",
+					},
+				},
+			},
+		},
+	}
+
+	appendIncludes(&response)
+	assert.Equal(t, 1, len(response.Includes.Entry))
+
+	response.Items = []item{
+		{
+			Sys: itemInfo{
+				Type: linkTypeAsset,
+			},
+		},
+	}
+	appendIncludes(&response)
+	assert.Equal(t, 1, len(response.Includes.Entry))
+
+	response.Items = append(response.Items, item{
+		Sys: itemInfo{
+			ID:   "2",
+			Type: linkTypeEntry,
+		},
+	})
+	appendIncludes(&response)
+	assert.Equal(t, 2, len(response.Includes.Entry))
+	assert.Equal(t, "1", response.Includes.Entry[0].Sys.ID)
+	assert.Equal(t, "2", response.Includes.Entry[1].Sys.ID)
+}
