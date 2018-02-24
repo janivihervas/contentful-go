@@ -40,9 +40,9 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 			Total: 0,
 		}
 		server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
 			err := json.NewEncoder(w).Encode(response)
 			assert.Nil(t, err)
-			w.WriteHeader(http.StatusOK)
 		}))
 		cms = Contentful{
 			token:   "token",
@@ -68,6 +68,45 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 	assert.NotNil(t, err)
 	err = cms.GetOne(ctx, nil, &result)
 	assert.NotNil(t, err)
+}
+
+func TestContentful_Get(t *testing.T) {
+	t.Parallel()
+
+	var (
+		dataFile = ""
+		server   = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			bytes, err := ioutil.ReadFile("test_data/" + dataFile)
+			assert.Nil(t, err)
+			_, err = w.Write(bytes)
+			assert.Nil(t, err)
+		}))
+		cms = Contentful{
+			token:   "token",
+			spaceID: "spaceID",
+			url:     server.URL,
+		}
+		ctx = context.Background()
+	)
+	defer server.Close()
+
+	resultMany := make([]map[string]interface{}, 1)
+	dataFile = "preview_all_pages.json"
+	err := cms.GetMany(ctx, nil, &resultMany)
+	assert.Nil(t, err)
+	assert.Equal(t, 3, len(resultMany))
+
+	resultOne := make(map[string]interface{})
+	dataFile = "preview_all_pages.json"
+	err = cms.GetOne(ctx, nil, &resultOne)
+	assert.NotNil(t, err)
+
+	dataFile = "preview_main_page.json"
+	err = cms.GetOne(ctx, nil, &resultOne)
+	assert.Nil(t, err)
+	assert.Equal(t, "Main page", resultOne["title"])
+	assert.Equal(t, 2, len(resultOne["subPages"].([]interface{})))
 }
 
 func TestContentful_search(t *testing.T) {
@@ -124,11 +163,11 @@ func TestContentful_search(t *testing.T) {
 
 	t.Run("Should not return an error and should return correctly parsed search results", func(tt *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
 			bytes, err := ioutil.ReadFile("test_data/prod_all_pages.json")
 			assert.Nil(tt, err)
 			_, err = w.Write(bytes)
 			assert.Nil(tt, err)
-			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
 
