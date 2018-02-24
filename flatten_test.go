@@ -71,3 +71,10 @@ func TestParseToSys(t *testing.T) {
 	assert.Equal(t, sys.LinkType, "Asset")
 	assert.Equal(t, sys.Type, "Link")
 }
+
+func TestFetchReferenceWrongIncludeType(t *testing.T) {
+	_, err := fetchReference(includes{}, sys{
+		LinkType: "linkType",
+	})
+	assert.NotNil(t, err)
+}
