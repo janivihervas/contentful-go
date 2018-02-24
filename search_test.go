@@ -70,6 +70,80 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestContentful_GetParseFails(t *testing.T) {
+	t.Parallel()
+
+	bytes, err := ioutil.ReadFile("test_data/reference_fields.json")
+	assert.Nil(t, err)
+	fields := make(map[string]interface{})
+	err = json.Unmarshal(bytes, &fields)
+	assert.Nil(t, err)
+
+	var (
+		response = searchResults{
+			Total: 1,
+			Items: []item{
+				{
+					Fields: fields,
+				},
+			},
+		}
+		server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			err := json.NewEncoder(w).Encode(response)
+			assert.Nil(t, err)
+		}))
+		cms = Contentful{
+			token:   "token",
+			spaceID: "spaceID",
+			url:     server.URL,
+		}
+		ctx        = context.Background()
+		resultMany = make([]map[string]interface{}, 1)
+		resultOne  = make(map[string]interface{})
+	)
+	defer server.Close()
+
+	err = cms.GetMany(ctx, nil, &resultMany)
+	assert.NotNil(t, err)
+	err = cms.GetOne(ctx, nil, &resultOne)
+	assert.NotNil(t, err)
+}
+
+func TestContentful_GetUnMarshalFails(t *testing.T) {
+	t.Parallel()
+
+	var (
+		dataFile = ""
+		server   = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			bytes, err := ioutil.ReadFile("test_data/" + dataFile)
+			assert.Nil(t, err)
+			_, err = w.Write(bytes)
+			assert.Nil(t, err)
+		}))
+		cms = Contentful{
+			token:   "token",
+			spaceID: "spaceID",
+			url:     server.URL,
+		}
+		ctx        = context.Background()
+		resultMany = make([]map[string]interface{}, 1)
+		resultOne  = make(map[string]interface{})
+	)
+	defer server.Close()
+
+	dataFile = "preview_all_pages.json"
+	err := cms.GetMany(ctx, nil, &resultOne)
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "json: cannot unmarshal")
+
+	dataFile = "preview_main_page.json"
+	err = cms.GetOne(ctx, nil, &resultMany)
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "json: cannot unmarshal")
+}
+
 func TestContentful_Get(t *testing.T) {
 	t.Parallel()
 
