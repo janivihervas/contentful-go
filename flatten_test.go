@@ -8,8 +8,6 @@ import (
 
 func TestParseToSys(t *testing.T) {
 	sys, ok := parseToSys(nil)
-	// TODO
-	t.Log(sys)
 	assert.False(t, ok)
 
 	sys, ok = parseToSys(make(map[string]interface{}))
