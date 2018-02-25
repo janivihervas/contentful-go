@@ -25,10 +25,10 @@ func TestContentful_GetServerFails(t *testing.T) {
 		result = make([]map[string]interface{}, 1)
 	)
 
-	err := cms.GetMany(ctx, nil, &result)
+	err := cms.GetMany(ctx, Parameters(), &result)
 	assert.NotNil(t, err)
 
-	err = cms.GetOne(ctx, nil, &result)
+	err = cms.GetOne(ctx, Parameters(), &result)
 	assert.NotNil(t, err)
 }
 
@@ -54,19 +54,19 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 	)
 	defer server.Close()
 
-	err := cms.GetMany(ctx, nil, &result)
+	err := cms.GetMany(ctx, Parameters(), &result)
 	assert.NotNil(t, err)
-	err = cms.GetOne(ctx, nil, &result)
+	err = cms.GetOne(ctx, Parameters(), &result)
 	assert.NotNil(t, err)
 
 	response.Total = 2
-	err = cms.GetOne(ctx, nil, &result)
+	err = cms.GetOne(ctx, Parameters(), &result)
 	assert.NotNil(t, err)
 
 	response.Total = 1
-	err = cms.GetMany(ctx, nil, &result)
+	err = cms.GetMany(ctx, Parameters(), &result)
 	assert.NotNil(t, err)
-	err = cms.GetOne(ctx, nil, &result)
+	err = cms.GetOne(ctx, Parameters(), &result)
 	assert.NotNil(t, err)
 }
 
@@ -104,9 +104,9 @@ func TestContentful_GetParseFails(t *testing.T) {
 	)
 	defer server.Close()
 
-	err = cms.GetMany(ctx, nil, &resultMany)
+	err = cms.GetMany(ctx, Parameters(), &resultMany)
 	assert.NotNil(t, err)
-	err = cms.GetOne(ctx, nil, &resultOne)
+	err = cms.GetOne(ctx, Parameters(), &resultOne)
 	assert.NotNil(t, err)
 }
 
@@ -134,12 +134,12 @@ func TestContentful_GetUnMarshalFails(t *testing.T) {
 	defer server.Close()
 
 	dataFile = "preview_all_pages.json"
-	err := cms.GetMany(ctx, nil, &resultOne)
+	err := cms.GetMany(ctx, Parameters(), &resultOne)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "json: cannot unmarshal")
 
 	dataFile = "preview_main_page.json"
-	err = cms.GetOne(ctx, nil, &resultMany)
+	err = cms.GetOne(ctx, Parameters(), &resultMany)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "json: cannot unmarshal")
 }
@@ -167,17 +167,17 @@ func TestContentful_Get(t *testing.T) {
 
 	resultMany := make([]map[string]interface{}, 1)
 	dataFile = "preview_all_pages.json"
-	err := cms.GetMany(ctx, nil, &resultMany)
+	err := cms.GetMany(ctx, Parameters(), &resultMany)
 	assert.Nil(t, err)
 	assert.Equal(t, 3, len(resultMany))
 
 	resultOne := make(map[string]interface{})
 	dataFile = "preview_all_pages.json"
-	err = cms.GetOne(ctx, nil, &resultOne)
+	err = cms.GetOne(ctx, Parameters(), &resultOne)
 	assert.NotNil(t, err)
 
 	dataFile = "preview_main_page.json"
-	err = cms.GetOne(ctx, nil, &resultOne)
+	err = cms.GetOne(ctx, Parameters(), &resultOne)
 	assert.Nil(t, err)
 	assert.Equal(t, "Main page", resultOne["title"])
 	assert.Equal(t, 2, len(resultOne["subPages"].([]interface{})))
@@ -195,7 +195,7 @@ func TestContentful_search(t *testing.T) {
 	)
 
 	t.Run("Should return an error if no url is set", func(tt *testing.T) {
-		_, err := cms.search(ctx, nil)
+		_, err := cms.search(ctx, SearchParameters{})
 		assert.NotNil(tt, err)
 	})
 
@@ -208,7 +208,7 @@ func TestContentful_search(t *testing.T) {
 		defer server.Close()
 
 		cms.url = server.URL
-		_, _ = cms.search(ctx, nil)
+		_, _ = cms.search(ctx, Parameters())
 	})
 
 	t.Run("Should return an error if Contentful responds with non-200 status code", func(tt *testing.T) {
@@ -218,7 +218,7 @@ func TestContentful_search(t *testing.T) {
 		defer server.Close()
 
 		cms.url = server.URL
-		_, err := cms.search(ctx, nil)
+		_, err := cms.search(ctx, Parameters())
 		assert.NotNil(tt, err)
 		assert.Contains(tt, err.Error(), "500")
 	})
@@ -231,7 +231,7 @@ func TestContentful_search(t *testing.T) {
 		defer server.Close()
 
 		cms.url = server.URL
-		_, err := cms.search(ctx, nil)
+		_, err := cms.search(ctx, Parameters())
 		assert.NotNil(tt, err)
 	})
 
@@ -246,7 +246,7 @@ func TestContentful_search(t *testing.T) {
 		defer server.Close()
 
 		cms.url = server.URL
-		response, err := cms.search(ctx, nil)
+		response, err := cms.search(ctx, Parameters())
 		assert.Nil(tt, err)
 		assert.Equal(tt, 2, response.Total)
 		assert.Equal(tt, 0, response.Skip)

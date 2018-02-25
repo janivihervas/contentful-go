@@ -22,15 +22,13 @@ import (
 //	defer cancel()
 //
 //	pages := make([]Page{}, 1)
-//	params := url.Values{
-//		"content_type": []string{"page"}
-//	}
+//	params := contentful.Parameters().ByContentType("page")
 //
 //	err := cms.GetMany(ctx, params, &pages)
 //	if err != nil {
 //		// Handle error
 //	}
-func (cms *Contentful) GetMany(ctx context.Context, parameters url.Values, data interface{}) error {
+func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters, data interface{}) error {
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
 		return err
@@ -60,7 +58,7 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters url.Values, data 
 // Works exactly the same way as GetMany, except will be able to marshal
 // a search result of one item to a struct instead of a slice of length of one item.
 // Will return an error if there is not exactly one entry returned
-func (cms *Contentful) GetOne(ctx context.Context, parameters url.Values, data interface{}) error {
+func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, data interface{}) error {
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
 		return err
@@ -85,10 +83,10 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters url.Values, data i
 	return json.Unmarshal(bytes, data)
 }
 
-func (cms *Contentful) search(ctx context.Context, parameters url.Values) (searchResults, error) {
+func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) (searchResults, error) {
 	response := searchResults{}
-	if parameters == nil {
-		parameters = url.Values{}
+	if parameters.Values == nil {
+		parameters.Values = url.Values{}
 	}
 	parameters.Set("include", "10")
 
