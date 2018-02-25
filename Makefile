@@ -47,6 +47,10 @@ lint:
 
 .PHONY: test
 test:
+	go test -race -cover -run "[^ExampleContentful_GetMany|ExampleContentful_GetOne|ExampleParameters|ExampleInformation|ExampleFile|ExampleAsset]" ./...
+
+.PHONY: test-all
+test-all:
 	go test -race -cover ./...
 
 .PHONY: test-ci

@@ -242,5 +242,5 @@ func fetchReference(includes includes, sys sys) (interface{}, error) {
 		return struct{}{}, fmt.Errorf("could not find a reference with type %s and with id %s.\nReferences:\n%s", sys.LinkType, sys.ID, refString)
 	}
 
-	return flattenField(includes, item.Fields)
+	return flattenItem(includes, item)
 }

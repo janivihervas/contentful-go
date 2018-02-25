@@ -9,25 +9,8 @@ import (
 	"net/url"
 )
 
-// GetMany entries from Contentful.
-//
-// Example usage:
-//	type Page struct {
-//		Title string `json:"title"`
-//	}
-//
-//	cms := contentful.New("token", "space", false)
-//
-//	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
-//	defer cancel()
-//
-//	pages := make([]Page{}, 1)
-//	params := contentful.Parameters().ByContentType("page")
-//
-//	err := cms.GetMany(ctx, params, &pages)
-//	if err != nil {
-//		// Handle error
-//	}
+// GetMany entries from Contentful. The flattened json output will be marshaled into data parameter,
+// which will need to be a slice or an array. Will return an error if zero entries were returned
 func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters, data interface{}) error {
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
@@ -53,10 +36,7 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 	return json.Unmarshal(bytes, data)
 }
 
-// GetOne entry from Contentful.
-//
-// Works exactly the same way as GetMany, except will be able to marshal
-// a search result of one item to a struct instead of a slice of length of one item.
+// GetOne entry from Contentful. The flattened json output will be marshaled into data parameter.
 // Will return an error if there is not exactly one entry returned
 func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, data interface{}) error {
 	response, err := cms.search(ctx, parameters)
