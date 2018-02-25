@@ -23,7 +23,7 @@ func (p SearchParameters) ByContentType(contentType string) SearchParameters {
 	return p
 }
 
-// ByFieldValue searches by a field value
+// ByFieldValue searches by a field value. REQUIRES THAT CONTENT TYPE IS SET
 func (p SearchParameters) ByFieldValue(fieldName, fieldValue string) SearchParameters {
 	p.Add("fields."+fieldName, fieldValue)
 	return p
