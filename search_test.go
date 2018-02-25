@@ -171,6 +171,29 @@ func TestContentful_Get(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 3, len(resultMany))
 
+	cases := []struct {
+		expected interface{}
+		actual   interface{}
+	}{
+		{3, len(resultMany)},
+		{"Sub page", resultMany[0]["title"]},
+		{"page", resultMany[0]["contentful_contentType"]},
+		{"FcAxxzogmsOMcc0kac6Iu", resultMany[0]["contentful_id"]},
+		{"en-US", resultMany[0]["contentful_locale"]},
+		{"Not published page", resultMany[1]["title"]},
+		{"page", resultMany[1]["contentful_contentType"]},
+		{"5CVt4s6uvS0cuym4wmWg2k", resultMany[1]["contentful_id"]},
+		{"en-US", resultMany[1]["contentful_locale"]},
+		{"Main page", resultMany[2]["title"]},
+		{"page", resultMany[2]["contentful_contentType"]},
+		{"2Cbt07njicqO4wSYCQ8CeK", resultMany[2]["contentful_id"]},
+		{"en-US", resultMany[2]["contentful_locale"]},
+	}
+
+	for _, c := range cases {
+		assert.Equal(t, c.expected, c.actual)
+	}
+
 	resultOne := make(map[string]interface{})
 	dataFile = "preview_all_pages.json"
 	err = cms.GetOne(ctx, Parameters(), &resultOne)
@@ -179,6 +202,21 @@ func TestContentful_Get(t *testing.T) {
 	dataFile = "preview_main_page.json"
 	err = cms.GetOne(ctx, Parameters(), &resultOne)
 	assert.Nil(t, err)
+
+	cases = []struct {
+		expected interface{}
+		actual   interface{}
+	}{
+		{2, len(resultOne["subPages"].([]interface{}))},
+		{"Main page", resultOne["title"]},
+		{"page", resultOne["contentful_contentType"]},
+		{"2Cbt07njicqO4wSYCQ8CeK", resultOne["contentful_id"]},
+		{"en-US", resultOne["contentful_locale"]},
+	}
+
+	for _, c := range cases {
+		assert.Equal(t, c.expected, c.actual)
+	}
 	assert.Equal(t, "Main page", resultOne["title"])
 	assert.Equal(t, 2, len(resultOne["subPages"].([]interface{})))
 }
