@@ -144,3 +144,7 @@ fmt.Println(page.Banner.File.FileName)
 fmt.Println(page.Banner.File.ContentType)
 fmt.Println(strings.Split(page.Banner.File.URL, "/")[2]) // Will be in the form of "//images.contentful.com/space.id/asset-id/some-id/orange.png"
 ```
+
+## License
+
+[MIT](LICENSE)
