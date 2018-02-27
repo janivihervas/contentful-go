@@ -10,12 +10,12 @@ const (
 
 // Information about the entry or asset
 type Information struct {
-	ID          string    `json:"contentful_id"`
-	ContentType string    `json:"contentful_contentType"`
-	Revision    int       `json:"contentful_revision"`
-	CreatedAt   time.Time `json:"contentful_createdAt"`
-	UpdatedAt   time.Time `json:"contentful_updatedAt"`
-	Locale      string    `json:"contentful_locale"`
+	ID          string    `json:"contentfulId"`
+	ContentType string    `json:"contentfulContentType"`
+	Revision    int       `json:"contentfulRevision"`
+	CreatedAt   time.Time `json:"contentfulCreatedAt"`
+	UpdatedAt   time.Time `json:"contentfulUpdatedAt"`
+	Locale      string    `json:"contentfulLocale"`
 }
 
 // Asset from Contentful
