@@ -177,17 +177,17 @@ func TestContentful_Get(t *testing.T) {
 	}{
 		{3, len(resultMany)},
 		{"Sub page", resultMany[0]["title"]},
-		{"page", resultMany[0]["contentful_contentType"]},
-		{"FcAxxzogmsOMcc0kac6Iu", resultMany[0]["contentful_id"]},
-		{"en-US", resultMany[0]["contentful_locale"]},
+		{"page", resultMany[0]["contentfulContentType"]},
+		{"FcAxxzogmsOMcc0kac6Iu", resultMany[0]["contentfulId"]},
+		{"en-US", resultMany[0]["contentfulLocale"]},
 		{"Not published page", resultMany[1]["title"]},
-		{"page", resultMany[1]["contentful_contentType"]},
-		{"5CVt4s6uvS0cuym4wmWg2k", resultMany[1]["contentful_id"]},
-		{"en-US", resultMany[1]["contentful_locale"]},
+		{"page", resultMany[1]["contentfulContentType"]},
+		{"5CVt4s6uvS0cuym4wmWg2k", resultMany[1]["contentfulId"]},
+		{"en-US", resultMany[1]["contentfulLocale"]},
 		{"Main page", resultMany[2]["title"]},
-		{"page", resultMany[2]["contentful_contentType"]},
-		{"2Cbt07njicqO4wSYCQ8CeK", resultMany[2]["contentful_id"]},
-		{"en-US", resultMany[2]["contentful_locale"]},
+		{"page", resultMany[2]["contentfulContentType"]},
+		{"2Cbt07njicqO4wSYCQ8CeK", resultMany[2]["contentfulId"]},
+		{"en-US", resultMany[2]["contentfulLocale"]},
 	}
 
 	for _, c := range cases {
@@ -209,9 +209,9 @@ func TestContentful_Get(t *testing.T) {
 	}{
 		{2, len(resultOne["subPages"].([]interface{}))},
 		{"Main page", resultOne["title"]},
-		{"page", resultOne["contentful_contentType"]},
-		{"2Cbt07njicqO4wSYCQ8CeK", resultOne["contentful_id"]},
-		{"en-US", resultOne["contentful_locale"]},
+		{"page", resultOne["contentfulContentType"]},
+		{"2Cbt07njicqO4wSYCQ8CeK", resultOne["contentfulId"]},
+		{"en-US", resultOne["contentfulLocale"]},
 	}
 
 	for _, c := range cases {

@@ -74,12 +74,12 @@ func flattenItem(includes includes, item item) (map[string]interface{}, error) {
 	}
 
 	if item.Sys.ID != "" {
-		flattenedFields["contentful_id"] = item.Sys.ID
-		flattenedFields["contentful_contentType"] = item.Sys.ContentType.Sys.ID
-		flattenedFields["contentful_revision"] = item.Sys.Revision
-		flattenedFields["contentful_createdAt"] = item.Sys.CreatedAt
-		flattenedFields["contentful_updatedAt"] = item.Sys.UpdatedAt
-		flattenedFields["contentful_locale"] = item.Sys.Locale
+		flattenedFields["contentfulId"] = item.Sys.ID
+		flattenedFields["contentfulContentType"] = item.Sys.ContentType.Sys.ID
+		flattenedFields["contentfulRevision"] = item.Sys.Revision
+		flattenedFields["contentfulCreatedAt"] = item.Sys.CreatedAt
+		flattenedFields["contentfulUpdatedAt"] = item.Sys.UpdatedAt
+		flattenedFields["contentfulLocale"] = item.Sys.Locale
 	}
 
 	return flattenedFields, nil
