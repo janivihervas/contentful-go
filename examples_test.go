@@ -95,7 +95,7 @@ func Example() {
 	fmt.Println(pages[0].Banner.Description)
 	fmt.Println(pages[0].Banner.File.FileName)
 	fmt.Println(pages[0].Banner.File.ContentType)
-	fmt.Println(strings.Split(pages[0].Banner.File.URL, "/")[2]) // Will be in the form of "//images.contentful.com/space.id/asset-id/some-id/orange.png"
+	fmt.Println(strings.Split(pages[0].Banner.File.URL, "/")[2]) // Will be in the form of "//images.ctfassets.net/space.id/asset-id/some-id/orange.png"
 
 	// One result
 	fmt.Println(page.Title)
@@ -118,26 +118,26 @@ func Example() {
 	fmt.Println(page.Banner.Description)
 	fmt.Println(page.Banner.File.FileName)
 	fmt.Println(page.Banner.File.ContentType)
-	fmt.Println(strings.Split(page.Banner.File.URL, "/")[2]) // Will be in the form of "//images.contentful.com/space.id/asset-id/some-id/orange.png"
+	fmt.Println(strings.Split(page.Banner.File.URL, "/")[2]) // Will be in the form of "//images.ctfassets.net/space.id/asset-id/some-id/orange.png"
 	// Output:
 	// 3
-	// Not published page
-	// 5CVt4s6uvS0cuym4wmWg2k
+	// Sub page
+	// FcAxxzogmsOMcc0kac6Iu
 	// page
 	// 1
-	// 2018-02-20 18:19:01.359 +0000 UTC
-	// 2018-02-20 18:23:36.818 +0000 UTC
+	// 2018-02-20 18:15:09.146 +0000 UTC
+	// 2018-02-20 18:19:33.036 +0000 UTC
 	// en-US
-	// 3hBPd2try88AaWsMMU2Ga
+	// 3ReVDbQQfmKY60Y6CCwAg6
 	// 1
-	// 2018-02-20 18:17:38.568 +0000 UTC
-	// 2018-02-20 18:17:58.035 +0000 UTC
+	// 2018-02-20 18:15:19.743 +0000 UTC
+	// 2018-02-20 18:16:39.705 +0000 UTC
 	// en-US
-	// Blue
-	// Blue image
-	// blue.png
+	// Orange
+	// Orange image
+	// orange.png
 	// image/png
-	// images.contentful.com
+	// images.ctfassets.net
 	// Main page
 	// 2Cbt07njicqO4wSYCQ8CeK
 	// page
@@ -148,13 +148,13 @@ func Example() {
 	// 2BNT5Xj0CsgUOSMkKysYKq
 	// 2
 	// 2018-02-20 18:14:18.301 +0000 UTC
-	// 2018-02-20 18:17:30.57 +0000 UTC
+	// 2018-02-20 18:17:30.591 +0000 UTC
 	// en-US
 	// Green
 	// Green image
 	// green.png
 	// image/png
-	// images.contentful.com
+	// images.ctfassets.net
 }
 
 func ExampleContentful_GetMany() {
@@ -186,10 +186,10 @@ func ExampleContentful_GetMany() {
 	fmt.Println(strings.Split(pages[0].Banner.File.URL, "/")[2])
 	// Output:
 	// 3
-	// Not published page
-	// Blue
-	// Blue image
-	// images.contentful.com
+	// Sub page
+	// Orange
+	// Orange image
+	// images.ctfassets.net
 }
 
 func ExampleContentful_GetOne() {
@@ -223,7 +223,7 @@ func ExampleContentful_GetOne() {
 	// Main page
 	// Green
 	// Green image
-	// images.contentful.com
+	// images.ctfassets.net
 	// 2
 }
 
@@ -296,7 +296,7 @@ func ExampleInformation() {
 	// page
 	// 1
 	// 2018-02-20 18:15:09.146 +0000 UTC
-	// 2018-02-20 18:19:32.99 +0000 UTC
+	// 2018-02-20 18:19:33.036 +0000 UTC
 	// en-US
 }
 
@@ -338,7 +338,7 @@ func ExampleAsset() {
 	//
 	// 2
 	// 2018-02-20 18:14:18.301 +0000 UTC
-	// 2018-02-20 18:17:30.57 +0000 UTC
+	// 2018-02-20 18:17:30.591 +0000 UTC
 	// en-US
 }
 
@@ -370,5 +370,5 @@ func ExampleFile() {
 	// Output:
 	// green.png
 	// image/png
-	// images.contentful.com
+	// images.ctfassets.net
 }

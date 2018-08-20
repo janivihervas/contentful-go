@@ -120,7 +120,7 @@ fmt.Println(pages[0].Banner.Title)
 fmt.Println(pages[0].Banner.Description)
 fmt.Println(pages[0].Banner.File.FileName)
 fmt.Println(pages[0].Banner.File.ContentType)
-fmt.Println(strings.Split(pages[0].Banner.File.URL, "/")[2]) // Will be in the form of "//images.contentful.com/space.id/asset-id/some-id/orange.png"
+fmt.Println(strings.Split(pages[0].Banner.File.URL, "/")[2]) // Will be in the form of "//images.ctfassets.net/space.id/asset-id/some-id/orange.png"
 
 // One result
 fmt.Println(page.Title)
@@ -143,7 +143,7 @@ fmt.Println(page.Banner.Title)
 fmt.Println(page.Banner.Description)
 fmt.Println(page.Banner.File.FileName)
 fmt.Println(page.Banner.File.ContentType)
-fmt.Println(strings.Split(page.Banner.File.URL, "/")[2]) // Will be in the form of "//images.contentful.com/space.id/asset-id/some-id/orange.png"
+fmt.Println(strings.Split(page.Banner.File.URL, "/")[2]) // Will be in the form of "//images.ctfassets.net/space.id/asset-id/some-id/orange.png"
 ```
 
 ## License

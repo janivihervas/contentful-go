@@ -149,7 +149,7 @@
           "title": "Green",
           "description": "Green image",
           "file": {
-            "url": "//images.contentful.com/spaceID/green.png",
+            "url": "//images.ctfassets.net/spaceID/green.png",
             "details": {
               "size": 1508,
               "image": {
@@ -182,7 +182,7 @@
           "title": "Orange",
           "description": "Orange image",
           "file": {
-            "url": "//images.contentful.com/spaceID/orange.png",
+            "url": "//images.ctfassets.net/spaceID/orange.png",
             "details": {
               "size": 1506,
               "image": {
@@ -215,7 +215,7 @@
           "title": "Blue",
           "description": "Blue image",
           "file": {
-            "url": "//images.contentful.com/spaceID/blue.png",
+            "url": "//images.ctfassets.net/spaceID/blue.png",
             "details": {
               "size": 1504,
               "image": {
