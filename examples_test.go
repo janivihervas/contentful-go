@@ -8,7 +8,7 @@ import (
 
 	"net/url"
 
-	"github.com/janivihervas/contentful-go"
+	"github.com/janivihervas/contentful-go/v2"
 )
 
 func Example() {

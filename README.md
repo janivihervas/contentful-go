@@ -26,7 +26,7 @@ dep ensure -add github.com/janivihervas/contentful-go
 
 ```go
 import (
-	"github.com/janivihervas/contentful-go"
+	"github.com/janivihervas/contentful-go/v2"
 )
 
 func main() {

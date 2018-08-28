@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/janivihervas/contentful-go"
+	"github.com/janivihervas/contentful-go/v2"
 )
 
 var (
