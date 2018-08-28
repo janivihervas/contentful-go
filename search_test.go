@@ -73,7 +73,7 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 func TestContentful_GetParseFails(t *testing.T) {
 	t.Parallel()
 
-	bytes, err := ioutil.ReadFile("test_data/reference_fields.json")
+	bytes, err := ioutil.ReadFile("testdata/reference_fields.json")
 	assert.Nil(t, err)
 	fields := make(map[string]interface{})
 	err = json.Unmarshal(bytes, &fields)
@@ -117,7 +117,7 @@ func TestContentful_GetUnMarshalFails(t *testing.T) {
 		dataFile = ""
 		server   = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			bytes, err := ioutil.ReadFile("test_data/" + dataFile)
+			bytes, err := ioutil.ReadFile("testdata/" + dataFile)
 			assert.Nil(t, err)
 			_, err = w.Write(bytes)
 			assert.Nil(t, err)
@@ -151,7 +151,7 @@ func TestContentful_Get(t *testing.T) {
 		dataFile = ""
 		server   = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			bytes, err := ioutil.ReadFile("test_data/" + dataFile)
+			bytes, err := ioutil.ReadFile("testdata/" + dataFile)
 			assert.Nil(t, err)
 			_, err = w.Write(bytes)
 			assert.Nil(t, err)
@@ -276,7 +276,7 @@ func TestContentful_search(t *testing.T) {
 	t.Run("Should not return an error and should return correctly parsed search results", func(tt *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			bytes, err := ioutil.ReadFile("test_data/prod_all_pages.json")
+			bytes, err := ioutil.ReadFile("testdata/prod_all_pages.json")
 			assert.Nil(tt, err)
 			_, err = w.Write(bytes)
 			assert.Nil(tt, err)
