@@ -8,8 +8,7 @@ machine:
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.10.0
-    working_directory: /go/src/github.com/janivihervas/contentful-go
+      - image: circleci/golang:1.11.0
     steps:
       - checkout
       - run:
@@ -18,19 +17,15 @@ jobs:
             git remote add pushback https://$PUSHBACK_TOKEN@github.com/janivihervas/contentful-go.git
             git config --global user.name $PUSHBACK_USER_NAME
             git config --global user.email $PUSHBACK_USER_EMAIL
-      - run:
-          name: Install dep
-          command: |
-            DEP_VERSION=0.4.1
-            curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o $GOPATH/bin/dep
-            chmod +x $GOPATH/bin/dep
       - restore_cache:
           keys:
-            - v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
+            - v1-deps-{{ arch }}-{{ checksum "go.sum" }}
       - run:
-          name: make install
+          name: Install
           command: |
+            go mod tidy
             make install
+            make setup
             if [[ $CIRCLE_BRANCH != "master" ]]; then
               if [[ $(git status --porcelain) ]]; then
                 git add --all
@@ -38,9 +33,9 @@ jobs:
               fi
             fi
       - save_cache:
-          key: v1-deps-{{ arch }}-{{ checksum "Gopkg.lock" }}
+          key: v1-deps-{{ arch }}-{{ checksum "go.sum" }}
           paths:
-            - vendor
+            - $GOPATH/pkg/mod
       - run: make setup
       - run:
           name: make format
@@ -52,13 +47,8 @@ jobs:
                 git commit -m "AUTOMATIC BOT: Format"
               fi
             fi
-      - run:
-          name: make lint
-          command: make --just-print lint-sync | parallel -k
-      - run: make test-ci
-      - run:
-          name: Upload coverage to codecov.io
-          command: bash <(curl -s https://codecov.io/bash)
+      - run: make lint
+      - run: make test-codecov
       - run:
           name: Push autobot changes
           command: |
