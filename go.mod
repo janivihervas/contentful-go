@@ -5,7 +5,6 @@ require (
 	github.com/davecgh/go-spew v1.1.0 // indirect
 	github.com/fzipp/gocyclo v0.0.0-20150627053110-6acd4345c835 // indirect
 	github.com/golang/lint v0.0.0-20180702182130-06c8688daad7 // indirect
-	github.com/janivihervas/contentful-go v2.0.1+incompatible // indirect
 	github.com/kisielk/errcheck v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.1
