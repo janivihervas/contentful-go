@@ -36,7 +36,6 @@ jobs:
           key: v1-deps-{{ arch }}-{{ checksum "go.sum" }}
           paths:
             - $GOPATH/pkg/mod
-      - run: make setup
       - run:
           name: make format
           command: |

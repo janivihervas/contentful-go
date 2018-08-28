@@ -18,7 +18,7 @@ setup:
 
 .PHONY: format
 format:
-	go fmt -s -w -e ./...
+	gofmt -s -w -e ./...
 	goimports -w -l -e .
 
 .PHONY: vet golint gocyclo interfacer errcheck nakedret
