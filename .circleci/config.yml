@@ -19,7 +19,7 @@ jobs:
             git config --global user.email $PUSHBACK_USER_EMAIL
       - restore_cache:
           keys:
-            - v1-deps-{{ arch }}-{{ checksum "go.sum" }}
+            - v2-deps-{{ arch }}-{{ checksum "go.sum" }}
       - run:
           name: Install
           command: |
@@ -33,9 +33,9 @@ jobs:
               fi
             fi
       - save_cache:
-          key: v1-deps-{{ arch }}-{{ checksum "go.sum" }}
+          key: v2-deps-{{ arch }}-{{ checksum "go.sum" }}
           paths:
-            - $GOPATH/pkg/mod
+            - /go/pkg/mod
       - run:
           name: make format
           command: |
