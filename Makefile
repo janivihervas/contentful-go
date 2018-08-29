@@ -52,7 +52,7 @@ test:
 test-all:
 	go test -race -cover ./...
 
-.PHONY: test-ci
+.PHONY: test-codecov
 test-codecov:
 	go test -race -coverprofile=coverage.out -covermode=atomic ./...
 	bash <(curl -s https://codecov.io/bash)
