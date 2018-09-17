@@ -55,19 +55,19 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 	defer server.Close()
 
 	err := cms.GetMany(ctx, Parameters(), &result)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	err = cms.GetOne(ctx, Parameters(), &result)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 
 	response.Total = 2
 	err = cms.GetOne(ctx, Parameters(), &result)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 
 	response.Total = 1
 	err = cms.GetMany(ctx, Parameters(), &result)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	err = cms.GetOne(ctx, Parameters(), &result)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 func TestContentful_GetParseFails(t *testing.T) {

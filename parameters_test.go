@@ -15,11 +15,13 @@ func TestParameters(t *testing.T) {
 		ByContentType("page").
 		ByFieldValue("title", "Main page").
 		ByFieldValue("description", "Main page description").
+		ByLocale("en-US").
+		ByID("contentful_ID").
 		Skip(1).
 		Limit(2)
 
 	assert.Equal(t,
-		"content_type=page&fields.description=Main+page+description&fields.title=Main+page&limit=2&skip=1",
+		"content_type=page&fields.description=Main+page+description&fields.title=Main+page&limit=2&locale=en-US&skip=1&sys.id=contentful_ID",
 		params.Encode(),
 	)
 }
