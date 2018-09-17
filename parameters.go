@@ -40,3 +40,15 @@ func (p SearchParameters) Skip(limit int) SearchParameters {
 	p.Set("skip", strconv.Itoa(limit))
 	return p
 }
+
+// ByLocale searches by the given locale
+func (p SearchParameters) ByLocale(locale string) SearchParameters {
+	p.Set("locale", locale)
+	return p
+}
+
+//ByID searches a specific contentful entry by it's "sys.id" parameter
+func (p SearchParameters) ByID(contentfulID string) SearchParameters {
+	p.Set("sys.id", contentfulID)
+	return p
+}
