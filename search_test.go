@@ -40,7 +40,7 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 			"foo": "bar",
 		}}
 		response = searchResults{}
-		server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server   = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			err := json.NewEncoder(w).Encode(response)
 			assert.Nil(t, err)
@@ -50,8 +50,8 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 			spaceID: "spaceID",
 			url:     server.URL,
 		}
-		ctx    = context.Background()
-		result = make([]map[string]interface{}, 1)
+		ctx       = context.Background()
+		result    = make([]map[string]interface{}, 1)
 		resultOne = make(map[string]interface{})
 	)
 	defer server.Close()
