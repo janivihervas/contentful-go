@@ -5,8 +5,7 @@ GO_TOOLS := golang.org/x/tools/cmd/goimports \
             github.com/golang/lint/golint \
             github.com/fzipp/gocyclo \
             github.com/kisielk/errcheck \
-            github.com/alexkohler/nakedret \
-            mvdan.cc/interfacer
+            github.com/alexkohler/nakedret
 
 .PHONY: install
 install:
@@ -21,15 +20,13 @@ format:
 	gofmt -s -w -e -l .
 	goimports -w -e -l .
 
-.PHONY: vet golint gocyclo interfacer errcheck nakedret
+.PHONY: vet golint gocyclo errcheck nakedret
 vet:
 	go vet ./...
 golint:
 	golint -set_exit_status ./...
 gocyclo:
 	gocyclo -over 12 $(GO_FILES_NO_TEST)
-interfacer:
-	interfacer ./...
 errcheck:
 	errcheck -ignoretests ./...
 nakedret:
@@ -40,7 +37,6 @@ lint:
 	vet \
 	golint \
 	gocyclo \
-	interfacer \
 	errcheck \
 	nakedret
 
