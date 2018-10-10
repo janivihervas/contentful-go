@@ -5,8 +5,7 @@ GO_TOOLS := golang.org/x/tools/cmd/goimports \
             github.com/golang/lint/golint \
             github.com/fzipp/gocyclo \
             github.com/kisielk/errcheck \
-            github.com/alexkohler/nakedret \
-            mvdan.cc/interfacer
+            github.com/alexkohler/nakedret
 
 .PHONY: install
 install:
