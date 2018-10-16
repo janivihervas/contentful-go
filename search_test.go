@@ -2,14 +2,12 @@ package contentful
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
-
-	"io/ioutil"
-
-	"encoding/json"
 
 	"github.com/stretchr/testify/assert"
 )

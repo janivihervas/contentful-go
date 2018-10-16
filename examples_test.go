@@ -3,10 +3,9 @@ package contentful_test
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
-
-	"net/url"
 
 	"github.com/janivihervas/contentful-go/v2"
 )
