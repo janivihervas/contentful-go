@@ -2,7 +2,7 @@ SHELL=/bin/bash
 MAKEFLAGS += --no-print-directory --output-sync
 GO_FILES_NO_TEST := `find . -name "*.go" -not -path "./vendor/*" -not -path ".git/*" -not -name "*_test.go"`
 GO_TOOLS := golang.org/x/tools/cmd/goimports \
-            github.com/golang/lint/golint \
+            golang.org/x/lint/golint \
             github.com/fzipp/gocyclo \
             github.com/kisielk/errcheck \
             github.com/alexkohler/nakedret
