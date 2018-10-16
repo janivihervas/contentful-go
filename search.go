@@ -148,7 +148,8 @@ func retryAfter(ctx context.Context, resp *http.Response) int {
 		retrySeconds = s
 	}
 
-	shouldRetry := time.Now().Add(time.Second * time.Duration(retrySeconds)).Before(timeUntilCancel)
+	timeToRetry := time.Now().Add(time.Second * time.Duration(retrySeconds))
+	shouldRetry := timeToRetry.Before(timeUntilCancel)
 	if shouldRetry {
 		return retrySeconds
 	}
