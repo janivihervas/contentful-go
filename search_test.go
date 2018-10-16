@@ -36,10 +36,11 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 	t.Parallel()
 
 	var (
-		response = searchResults{
-			Total: 0,
-		}
-		server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		items = item{Fields: map[string]interface{}{
+			"foo": "bar",
+		}}
+		response = searchResults{}
+		server   = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			err := json.NewEncoder(w).Encode(response)
 			assert.Nil(t, err)
@@ -49,25 +50,63 @@ func TestContentful_GetWrongTotal(t *testing.T) {
 			spaceID: "spaceID",
 			url:     server.URL,
 		}
-		ctx    = context.Background()
-		result = make([]map[string]interface{}, 1)
+		ctx       = context.Background()
+		result    = make([]map[string]interface{}, 1)
+		resultOne = make(map[string]interface{})
 	)
 	defer server.Close()
 
-	err := cms.GetMany(ctx, Parameters(), &result)
-	assert.Error(t, err)
-	err = cms.GetOne(ctx, Parameters(), &result)
-	assert.Error(t, err)
+	t.Run("Zero entries", func(t *testing.T) {
+		response.Total = 0
+		response.Items = make([]item, 0)
+		err := cms.GetMany(ctx, Parameters(), &result)
+		assert.Error(t, err)
+		assert.Equal(t, ErrNoEntries, err)
+		err = cms.GetOne(ctx, Parameters(), &result)
+		assert.Error(t, err)
+		assert.Equal(t, ErrNoEntries, err)
+	})
 
-	response.Total = 2
-	err = cms.GetOne(ctx, Parameters(), &result)
-	assert.Error(t, err)
+	t.Run("Two entries", func(t *testing.T) {
+		response.Total = 2
+		response.Items = []item{items, items}
+		err := cms.GetMany(ctx, Parameters(), &result)
+		assert.NoError(t, err)
+		err = cms.GetOne(ctx, Parameters(), &result)
+		assert.Error(t, err)
+		assert.Equal(t, ErrMoreThanOneEntry, err)
+	})
 
-	response.Total = 1
-	err = cms.GetMany(ctx, Parameters(), &result)
-	assert.Error(t, err)
-	err = cms.GetOne(ctx, Parameters(), &result)
-	assert.Error(t, err)
+	t.Run("One entry", func(t *testing.T) {
+		response.Total = 1
+		response.Items = []item{items}
+		err := cms.GetMany(ctx, Parameters(), &result)
+		assert.NoError(t, err)
+		err = cms.GetOne(ctx, Parameters(), &resultOne)
+		assert.NoError(t, err)
+	})
+
+	t.Run("One in total, zero in items", func(t *testing.T) {
+		response.Total = 1
+		response.Items = make([]item, 0)
+		err := cms.GetMany(ctx, Parameters(), &result)
+		assert.Error(t, err)
+		assert.Equal(t, ErrNoEntries, err)
+		err = cms.GetOne(ctx, Parameters(), &result)
+		assert.Error(t, err)
+		assert.Equal(t, ErrNoEntries, err)
+	})
+
+	t.Run("Zero in total, one in items", func(t *testing.T) {
+		response.Total = 0
+		response.Items = []item{items}
+		err := cms.GetMany(ctx, Parameters(), &result)
+		assert.Error(t, err)
+		assert.Equal(t, ErrNoEntries, err)
+		err = cms.GetOne(ctx, Parameters(), &result)
+		assert.Error(t, err)
+		assert.Equal(t, ErrNoEntries, err)
+	})
 }
 
 func TestContentful_GetParseFails(t *testing.T) {

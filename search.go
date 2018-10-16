@@ -9,6 +9,13 @@ import (
 	"net/url"
 )
 
+var (
+	// ErrNoEntries is returned if no entries were returned
+	ErrNoEntries = errors.New("contentful: no entries returned")
+	// ErrMoreThanOneEntry is returned if there were more than one entry returned
+	ErrMoreThanOneEntry = errors.New("contentful: more then one entry was returned")
+)
+
 // GetMany entries from Contentful. The flattened json output will be marshaled into data parameter,
 // which will need to be a slice or an array. Will return an error if zero entries were returned
 func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters, data interface{}) error {
@@ -18,7 +25,7 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 	}
 
 	if response.Total == 0 || len(response.Items) == 0 {
-		return errors.New("no items returned")
+		return ErrNoEntries
 	}
 
 	appendIncludes(&response)
@@ -44,8 +51,12 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 		return err
 	}
 
+	if response.Total == 0 || len(response.Items) == 0 {
+		return ErrNoEntries
+	}
+
 	if response.Total != 1 || len(response.Items) != 1 {
-		return fmt.Errorf("too many or too few items returned: %d", response.Total)
+		return ErrMoreThanOneEntry
 	}
 
 	appendIncludes(&response)
