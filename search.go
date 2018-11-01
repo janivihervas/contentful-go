@@ -46,11 +46,12 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 	appendIncludes(&response)
 
 	flattenedItems, err := flattenItems(response.Includes, response.Items)
-	spanFlatten.End()
 	if err != nil {
-		addSpanError(span, trace.StatusCodeUnknown, err)
+		addSpanError(spanFlatten, trace.StatusCodeUnknown, err)
+		spanFlatten.End()
 		return err
 	}
+	spanFlatten.End()
 
 	bytes, err := json.Marshal(flattenedItems)
 	if err != nil {
@@ -88,7 +89,7 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 	}
 
 	if response.Total != 1 || len(response.Items) != 1 {
-		addSpanError(span, trace.StatusCodeOutOfRange, ErrNoEntries)
+		addSpanError(span, trace.StatusCodeOutOfRange, ErrMoreThanOneEntry)
 		return ErrMoreThanOneEntry
 	}
 
@@ -96,11 +97,12 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 	appendIncludes(&response)
 
 	flattenedItem, err := flattenItem(response.Includes, response.Items[0])
-	spanFlatten.End()
 	if err != nil {
-		addSpanError(span, trace.StatusCodeUnknown, err)
+		addSpanError(spanFlatten, trace.StatusCodeUnknown, err)
+		spanFlatten.End()
 		return err
 	}
+	spanFlatten.End()
 
 	bytes, err := json.Marshal(flattenedItem)
 	if err != nil {
