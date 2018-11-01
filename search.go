@@ -172,7 +172,7 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 		addSpanError(span, trace.StatusCodeResourceExhausted, ErrTooManyRequests)
 		seconds := retryAfter(ctx, resp)
 		if seconds == -1 {
-			addSpanError(span, trace.StatusCodeCancelled, ErrTooManyRequests)
+			addSpanError(span, trace.StatusCodeDeadlineExceeded, ErrTooManyRequests)
 			return response, ErrTooManyRequests
 		}
 
