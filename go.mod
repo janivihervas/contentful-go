@@ -7,6 +7,6 @@ require (
 	github.com/kisielk/errcheck v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.2
-	golang.org/x/lint v0.0.0-20181011164241-5906bd5c48cd // indirect
-	golang.org/x/tools v0.0.0-20181016152912-4fd33079060a // indirect
+	golang.org/x/lint v0.0.0-20181026193005-c67002cb31c3 // indirect
+	golang.org/x/tools v0.0.0-20181101071927-45ff765b4815 // indirect
 )
