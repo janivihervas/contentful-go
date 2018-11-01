@@ -42,25 +42,27 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 		return ErrNoEntries
 	}
 
-	_, spanFlatten := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.flattenItems")
+	_, spanParse := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.parse")
+	defer spanParse.End()
 	appendIncludes(&response)
 
 	flattenedItems, err := flattenItems(response.Includes, response.Items)
 	if err != nil {
-		addSpanError(spanFlatten, trace.StatusCodeUnknown, err)
-		spanFlatten.End()
+		addSpanError(spanParse, trace.StatusCodeUnknown, err)
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
-	spanFlatten.End()
 
 	bytes, err := json.Marshal(flattenedItems)
 	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeInternal, err)
 		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
 	err = json.Unmarshal(bytes, data)
 	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeInternal, err)
 		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
@@ -93,25 +95,27 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 		return ErrMoreThanOneEntry
 	}
 
-	_, spanFlatten := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.flattenItem")
+	_, spanParse := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.parse")
+	defer spanParse.End()
 	appendIncludes(&response)
 
 	flattenedItem, err := flattenItem(response.Includes, response.Items[0])
 	if err != nil {
-		addSpanError(spanFlatten, trace.StatusCodeUnknown, err)
-		spanFlatten.End()
+		addSpanError(spanParse, trace.StatusCodeUnknown, err)
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
-	spanFlatten.End()
 
 	bytes, err := json.Marshal(flattenedItem)
 	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeInternal, err)
 		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
 	err = json.Unmarshal(bytes, data)
 	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeInternal, err)
 		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
