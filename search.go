@@ -38,22 +38,33 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 	}
 
 	if response.Total == 0 || len(response.Items) == 0 {
+		spanError(span, trace.StatusCodeNotFound, ErrNoEntries)
 		return ErrNoEntries
 	}
 
+	_, spanFlatten := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.flattenItems")
 	appendIncludes(&response)
 
 	flattenedItems, err := flattenItems(response.Includes, response.Items)
+	spanFlatten.End()
 	if err != nil {
+		spanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
 	bytes, err := json.Marshal(flattenedItems)
 	if err != nil {
+		spanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
-	return json.Unmarshal(bytes, data)
+	err = json.Unmarshal(bytes, data)
+	if err != nil {
+		spanError(span, trace.StatusCodeInternal, err)
+		return err
+	}
+
+	return nil
 }
 
 // GetOne entry from Contentful. The flattened json output will be marshaled into data parameter.
@@ -72,26 +83,38 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 	}
 
 	if response.Total == 0 || len(response.Items) == 0 {
+		spanError(span, trace.StatusCodeNotFound, ErrNoEntries)
 		return ErrNoEntries
 	}
 
 	if response.Total != 1 || len(response.Items) != 1 {
+		spanError(span, trace.StatusCodeOutOfRange, ErrNoEntries)
 		return ErrMoreThanOneEntry
 	}
 
+	_, spanFlatten := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.flattenItem")
 	appendIncludes(&response)
 
 	flattenedItem, err := flattenItem(response.Includes, response.Items[0])
+	spanFlatten.End()
 	if err != nil {
+		spanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
 	bytes, err := json.Marshal(flattenedItem)
 	if err != nil {
+		spanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
-	return json.Unmarshal(bytes, data)
+	err = json.Unmarshal(bytes, data)
+	if err != nil {
+		spanError(span, trace.StatusCodeInternal, err)
+		return err
+	}
+
+	return nil
 }
 
 func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) (searchResults, error) {
