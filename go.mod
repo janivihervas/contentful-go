@@ -15,7 +15,7 @@ require (
 	github.com/prometheus/common v0.0.0-20181020173914-7e9e6cabbd39 // indirect
 	github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d // indirect
 	github.com/stretchr/testify v1.2.2
-	go.opencensus.io v0.18.0 // indirect
+	go.opencensus.io v0.18.0
 	golang.org/x/lint v0.0.0-20181026193005-c67002cb31c3 // indirect
 	golang.org/x/net v0.0.0-20181029044818-c44066c5c816 // indirect
 	golang.org/x/oauth2 v0.0.0-20181031022657-8527f56f7107 // indirect
