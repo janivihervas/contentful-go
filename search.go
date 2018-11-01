@@ -38,7 +38,7 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 	}
 
 	if response.Total == 0 || len(response.Items) == 0 {
-		spanError(span, trace.StatusCodeNotFound, ErrNoEntries)
+		addSpanError(span, trace.StatusCodeNotFound, ErrNoEntries)
 		return ErrNoEntries
 	}
 
@@ -48,19 +48,19 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 	flattenedItems, err := flattenItems(response.Includes, response.Items)
 	spanFlatten.End()
 	if err != nil {
-		spanError(span, trace.StatusCodeUnknown, err)
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
 	bytes, err := json.Marshal(flattenedItems)
 	if err != nil {
-		spanError(span, trace.StatusCodeInternal, err)
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
 	err = json.Unmarshal(bytes, data)
 	if err != nil {
-		spanError(span, trace.StatusCodeInternal, err)
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
@@ -83,12 +83,12 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 	}
 
 	if response.Total == 0 || len(response.Items) == 0 {
-		spanError(span, trace.StatusCodeNotFound, ErrNoEntries)
+		addSpanError(span, trace.StatusCodeNotFound, ErrNoEntries)
 		return ErrNoEntries
 	}
 
 	if response.Total != 1 || len(response.Items) != 1 {
-		spanError(span, trace.StatusCodeOutOfRange, ErrNoEntries)
+		addSpanError(span, trace.StatusCodeOutOfRange, ErrNoEntries)
 		return ErrMoreThanOneEntry
 	}
 
@@ -98,19 +98,19 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 	flattenedItem, err := flattenItem(response.Includes, response.Items[0])
 	spanFlatten.End()
 	if err != nil {
-		spanError(span, trace.StatusCodeUnknown, err)
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
 	bytes, err := json.Marshal(flattenedItem)
 	if err != nil {
-		spanError(span, trace.StatusCodeInternal, err)
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
 	err = json.Unmarshal(bytes, data)
 	if err != nil {
-		spanError(span, trace.StatusCodeInternal, err)
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
@@ -130,7 +130,7 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 	urlStr := cms.url + "/spaces/" + cms.spaceID + "/entries?" + parameters.Encode()
 	urlParsed, err := url.Parse(urlStr)
 	if err != nil {
-		span.SetStatus(trace.Status{Code: trace.StatusCodeInternal, Message: err.Error()})
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return response, err
 	}
 
@@ -141,7 +141,7 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 
 	req, err := http.NewRequest(http.MethodGet, urlStr, nil)
 	if err != nil {
-		span.SetStatus(trace.Status{Code: trace.StatusCodeInternal, Message: err.Error()})
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return response, err
 	}
 
@@ -149,15 +149,15 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 	req = req.WithContext(ctx)
 	resp, err := http.DefaultClient.Do(req)
 	if err == context.Canceled {
-		span.SetStatus(trace.Status{Code: trace.StatusCodeCancelled, Message: err.Error()})
+		addSpanError(span, trace.StatusCodeCancelled, err)
 		return response, err
 	}
 	if err == context.DeadlineExceeded {
-		span.SetStatus(trace.Status{Code: trace.StatusCodeDeadlineExceeded, Message: err.Error()})
+		addSpanError(span, trace.StatusCodeDeadlineExceeded, err)
 		return response, err
 	}
 	if err != nil {
-		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return response, err
 	}
 	defer func() {
@@ -169,7 +169,7 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		seconds := retryAfter(ctx, resp)
 		if seconds == -1 {
-			span.SetStatus(trace.Status{Code: trace.StatusCodeResourceExhausted, Message: err.Error()})
+			addSpanError(span, trace.StatusCodeResourceExhausted, ErrTooManyRequests)
 			return response, ErrTooManyRequests
 		}
 
@@ -179,20 +179,20 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 		case <-time.After(time.Second * time.Duration(seconds)):
 			return cms.search(ctx, parameters)
 		case <-ctx.Done():
-			span.SetStatus(trace.Status{Code: trace.StatusCodeCancelled, Message: err.Error()})
+			addSpanError(span, trace.StatusCodeCancelled, err)
 			return response, ctx.Err()
 		}
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		err = fmt.Errorf("non-ok status code: %d", resp.StatusCode)
-		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return response, err
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
-		span.SetStatus(trace.Status{Code: trace.StatusCodeInternal, Message: err.Error()})
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return response, err
 	}
 
