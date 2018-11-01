@@ -171,7 +171,7 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		seconds := retryAfter(ctx, resp)
 		if seconds == -1 {
-			addSpanError(span, trace.StatusCodeResourceExhausted, ErrTooManyRequests)
+			addSpanError(span, trace.StatusCodeCancelled, ErrTooManyRequests)
 			return response, ErrTooManyRequests
 		}
 
@@ -179,6 +179,7 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 
 		select {
 		case <-time.After(time.Second * time.Duration(seconds)):
+			addSpanError(span, trace.StatusCodeResourceExhausted, err)
 			return cms.search(ctx, parameters)
 		case <-ctx.Done():
 			addSpanError(span, trace.StatusCodeCancelled, err)
