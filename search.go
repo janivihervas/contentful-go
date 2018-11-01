@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"go.opencensus.io/trace"
 )
 
 var (
@@ -27,6 +29,9 @@ var (
 // - context has a deadline/timeout set and
 // - seconds to wait is not after context's deadline/timeout, making this fail early
 func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters, data interface{}) error {
+	ctx, span := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.GetMany")
+	defer span.End()
+
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
 		return err
@@ -58,6 +63,9 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 // - context has a deadline/timeout set and
 // - seconds to wait is not after context's deadline/timeout, making this fail early
 func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, data interface{}) error {
+	ctx, span := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.GetOne")
+	defer span.End()
+
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
 		return err
@@ -87,45 +95,79 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 }
 
 func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) (searchResults, error) {
+	ctx, span := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.search")
+	defer span.End()
+
 	response := searchResults{}
 	if parameters.Values == nil {
 		parameters.Values = url.Values{}
 	}
 	parameters.Set("include", "10")
 
-	u := cms.url + "/spaces/" + cms.spaceID + "/entries?" + parameters.Encode()
-	req, err := http.NewRequest("GET", u, nil)
+	urlStr := cms.url + "/spaces/" + cms.spaceID + "/entries?" + parameters.Encode()
+	urlParsed, err := url.Parse(urlStr)
 	if err != nil {
+		span.SetStatus(trace.Status{Code: trace.StatusCodeInternal, Message: err.Error()})
+		return response, err
+	}
+
+	span.AddAttributes(trace.StringAttribute("http.host", urlParsed.Host))
+	span.AddAttributes(trace.StringAttribute("http.method", http.MethodGet))
+	span.AddAttributes(trace.StringAttribute("http.path", urlParsed.Path))
+	span.AddAttributes(trace.StringAttribute("http.query", urlParsed.RawQuery))
+
+	req, err := http.NewRequest(http.MethodGet, urlStr, nil)
+	if err != nil {
+		span.SetStatus(trace.Status{Code: trace.StatusCodeInternal, Message: err.Error()})
 		return response, err
 	}
 
 	req.Header.Add("Authorization", "Bearer "+cms.token)
 	req = req.WithContext(ctx)
 	resp, err := http.DefaultClient.Do(req)
+	if err == context.Canceled {
+		span.SetStatus(trace.Status{Code: trace.StatusCodeCancelled, Message: err.Error()})
+		return response, err
+	}
+	if err == context.DeadlineExceeded {
+		span.SetStatus(trace.Status{Code: trace.StatusCodeDeadlineExceeded, Message: err.Error()})
+		return response, err
+	}
 	if err != nil {
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
 		return response, err
 	}
 	defer func() {
 		_ = resp.Body.Close()
 	}()
 
+	span.AddAttributes(trace.Int64Attribute("http.status_code", int64(resp.StatusCode)))
+
 	if resp.StatusCode == http.StatusTooManyRequests {
 		seconds := retryAfter(ctx, resp)
 		if seconds == -1 {
+			span.SetStatus(trace.Status{Code: trace.StatusCodeResourceExhausted, Message: err.Error()})
 			return response, ErrTooManyRequests
 		}
 
+		span.AddAttributes(trace.Int64Attribute("http.ratelimit-reset", int64(seconds)))
 		time.Sleep(time.Second * time.Duration(seconds))
 		return cms.search(ctx, parameters)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return response, fmt.Errorf("non-ok status code: %d", resp.StatusCode)
+		err = fmt.Errorf("non-ok status code: %d", resp.StatusCode)
+		span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: err.Error()})
+		return response, err
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		span.SetStatus(trace.Status{Code: trace.StatusCodeInternal, Message: err.Error()})
+		return response, err
+	}
 
-	return response, err
+	return response, nil
 }
 
 func retryAfter(ctx context.Context, resp *http.Response) int {
