@@ -26,7 +26,7 @@ vet:
 golint:
 	golint -set_exit_status ./...
 gocyclo:
-	gocyclo -over 12 $(GO_FILES_NO_TEST)
+	gocyclo -over 13 $(GO_FILES_NO_TEST)
 errcheck:
 	errcheck -ignoretests ./...
 nakedret:
