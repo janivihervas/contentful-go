@@ -72,29 +72,37 @@ func Example() {
 		// handle error
 	}
 
+	var resultPage Page
+	for _, p := range pages {
+		if p.Information.ID == "FcAxxzogmsOMcc0kac6Iu" {
+			resultPage = p
+			break
+		}
+	}
+
 	// Multiple results
 	fmt.Println(len(pages))
-	fmt.Println(pages[0].Title)
+	fmt.Println(resultPage.Title)
 	// Additional information
-	fmt.Println(pages[0].Information.ID)
-	fmt.Println(pages[0].Information.ContentType)
-	fmt.Println(pages[0].Information.Revision)
-	fmt.Println(pages[0].Information.CreatedAt)
-	fmt.Println(pages[0].Information.UpdatedAt)
-	fmt.Println(pages[0].Information.Locale)
+	fmt.Println(resultPage.Information.ID)
+	fmt.Println(resultPage.Information.ContentType)
+	fmt.Println(resultPage.Information.Revision)
+	fmt.Println(resultPage.Information.CreatedAt)
+	fmt.Println(resultPage.Information.UpdatedAt)
+	fmt.Println(resultPage.Information.Locale)
 	// Asset has the same information, except for the content type.
 	// "Information" can be left out
-	fmt.Println(pages[0].Banner.ID)
-	fmt.Println(pages[0].Banner.Revision)
-	fmt.Println(pages[0].Banner.CreatedAt)
-	fmt.Println(pages[0].Banner.UpdatedAt)
-	fmt.Println(pages[0].Banner.Locale)
+	fmt.Println(resultPage.Banner.ID)
+	fmt.Println(resultPage.Banner.Revision)
+	fmt.Println(resultPage.Banner.CreatedAt)
+	fmt.Println(resultPage.Banner.UpdatedAt)
+	fmt.Println(resultPage.Banner.Locale)
 	// Asset information
-	fmt.Println(pages[0].Banner.Title)
-	fmt.Println(pages[0].Banner.Description)
-	fmt.Println(pages[0].Banner.File.FileName)
-	fmt.Println(pages[0].Banner.File.ContentType)
-	fmt.Println(strings.Split(pages[0].Banner.File.URL, "/")[2]) // Will be in the form of "//images.ctfassets.net/space.id/asset-id/some-id/orange.png"
+	fmt.Println(resultPage.Banner.Title)
+	fmt.Println(resultPage.Banner.Description)
+	fmt.Println(resultPage.Banner.File.FileName)
+	fmt.Println(resultPage.Banner.File.ContentType)
+	fmt.Println(strings.Split(resultPage.Banner.File.URL, "/")[2]) // Will be in the form of "//images.ctfassets.net/space.id/asset-id/some-id/orange.png"
 
 	// One result
 	fmt.Println(page.Title)
@@ -178,11 +186,19 @@ func ExampleContentful_GetMany() {
 		// handle error
 	}
 
+	var page Page
+	for _, p := range pages {
+		if p.Title == "Sub page" {
+			page = p
+			break
+		}
+	}
+
 	fmt.Println(len(pages))
-	fmt.Println(pages[0].Title)
-	fmt.Println(pages[0].Banner.Title)
-	fmt.Println(pages[0].Banner.Description)
-	fmt.Println(strings.Split(pages[0].Banner.File.URL, "/")[2])
+	fmt.Println(page.Title)
+	fmt.Println(page.Banner.Title)
+	fmt.Println(page.Banner.Description)
+	fmt.Println(strings.Split(page.Banner.File.URL, "/")[2])
 	// Output:
 	// 3
 	// Sub page
