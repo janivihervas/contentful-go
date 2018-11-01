@@ -175,7 +175,7 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 			return response, ErrTooManyRequests
 		}
 
-		span.AddAttributes(trace.Int64Attribute("http.ratelimit-reset", int64(seconds)))
+		span.AddAttributes(trace.Int64Attribute("http.ratelimit_reset", int64(seconds)))
 
 		select {
 		case <-time.After(time.Second * time.Duration(seconds)):
