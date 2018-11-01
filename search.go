@@ -151,8 +151,14 @@ func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) 
 		}
 
 		span.AddAttributes(trace.Int64Attribute("http.ratelimit-reset", int64(seconds)))
-		time.Sleep(time.Second * time.Duration(seconds))
-		return cms.search(ctx, parameters)
+
+		select {
+		case <-time.After(time.Second * time.Duration(seconds)):
+			return cms.search(ctx, parameters)
+		case <-ctx.Done():
+			span.SetStatus(trace.Status{Code: trace.StatusCodeCancelled, Message: err.Error()})
+			return response, ctx.Err()
+		}
 	}
 
 	if resp.StatusCode != http.StatusOK {
