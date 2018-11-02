@@ -34,6 +34,7 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
@@ -82,6 +83,7 @@ func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, 
 
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
