@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"go.opencensus.io/trace"
 )
 
 var (
@@ -27,28 +29,46 @@ var (
 // - context has a deadline/timeout set and
 // - seconds to wait is not after context's deadline/timeout, making this fail early
 func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters, data interface{}) error {
+	ctx, span := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.GetMany")
+	defer span.End()
+
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
 	if response.Total == 0 || len(response.Items) == 0 {
+		addSpanError(span, trace.StatusCodeNotFound, ErrNoEntries)
 		return ErrNoEntries
 	}
 
+	_, spanParse := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.parse")
+	defer spanParse.End()
 	appendIncludes(&response)
 
 	flattenedItems, err := flattenItems(response.Includes, response.Items)
 	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeUnknown, err)
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
 	bytes, err := json.Marshal(flattenedItems)
 	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeInternal, err)
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
-	return json.Unmarshal(bytes, data)
+	err = json.Unmarshal(bytes, data)
+	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeInternal, err)
+		addSpanError(span, trace.StatusCodeInternal, err)
+		return err
+	}
+
+	return nil
 }
 
 // GetOne entry from Contentful. The flattened json output will be marshaled into data parameter.
@@ -58,74 +78,134 @@ func (cms *Contentful) GetMany(ctx context.Context, parameters SearchParameters,
 // - context has a deadline/timeout set and
 // - seconds to wait is not after context's deadline/timeout, making this fail early
 func (cms *Contentful) GetOne(ctx context.Context, parameters SearchParameters, data interface{}) error {
+	ctx, span := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.GetOne")
+	defer span.End()
+
 	response, err := cms.search(ctx, parameters)
 	if err != nil {
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
 	if response.Total == 0 || len(response.Items) == 0 {
+		addSpanError(span, trace.StatusCodeNotFound, ErrNoEntries)
 		return ErrNoEntries
 	}
 
 	if response.Total != 1 || len(response.Items) != 1 {
+		addSpanError(span, trace.StatusCodeOutOfRange, ErrMoreThanOneEntry)
 		return ErrMoreThanOneEntry
 	}
 
+	_, spanParse := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.parse")
+	defer spanParse.End()
 	appendIncludes(&response)
 
 	flattenedItem, err := flattenItem(response.Includes, response.Items[0])
 	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeUnknown, err)
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return err
 	}
 
 	bytes, err := json.Marshal(flattenedItem)
 	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeInternal, err)
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return err
 	}
 
-	return json.Unmarshal(bytes, data)
+	err = json.Unmarshal(bytes, data)
+	if err != nil {
+		addSpanError(spanParse, trace.StatusCodeInternal, err)
+		addSpanError(span, trace.StatusCodeInternal, err)
+		return err
+	}
+
+	return nil
 }
 
 func (cms *Contentful) search(ctx context.Context, parameters SearchParameters) (searchResults, error) {
+	ctx, span := trace.StartSpan(ctx, "github.com/janivihervas/contentful-go.search")
+	defer span.End()
+
 	response := searchResults{}
 	if parameters.Values == nil {
 		parameters.Values = url.Values{}
 	}
 	parameters.Set("include", "10")
 
-	u := cms.url + "/spaces/" + cms.spaceID + "/entries?" + parameters.Encode()
-	req, err := http.NewRequest("GET", u, nil)
+	urlStr := cms.url + "/spaces/" + cms.spaceID + "/entries?" + parameters.Encode()
+	urlParsed, err := url.Parse(urlStr)
 	if err != nil {
+		addSpanError(span, trace.StatusCodeInternal, err)
+		return response, err
+	}
+
+	span.AddAttributes(trace.StringAttribute("http.host", urlParsed.Host))
+	span.AddAttributes(trace.StringAttribute("http.method", http.MethodGet))
+	span.AddAttributes(trace.StringAttribute("http.path", urlParsed.Path))
+	span.AddAttributes(trace.StringAttribute("http.query", urlParsed.RawQuery))
+
+	req, err := http.NewRequest(http.MethodGet, urlStr, nil)
+	if err != nil {
+		addSpanError(span, trace.StatusCodeInternal, err)
 		return response, err
 	}
 
 	req.Header.Add("Authorization", "Bearer "+cms.token)
 	req = req.WithContext(ctx)
 	resp, err := http.DefaultClient.Do(req)
+	if err == context.Canceled {
+		addSpanError(span, trace.StatusCodeCancelled, err)
+		return response, err
+	}
+	if err == context.DeadlineExceeded {
+		addSpanError(span, trace.StatusCodeDeadlineExceeded, err)
+		return response, err
+	}
 	if err != nil {
+		addSpanError(span, trace.StatusCodeUnknown, err)
 		return response, err
 	}
 	defer func() {
 		_ = resp.Body.Close()
 	}()
 
+	span.AddAttributes(trace.Int64Attribute("http.status_code", int64(resp.StatusCode)))
+
 	if resp.StatusCode == http.StatusTooManyRequests {
+		addSpanError(span, trace.StatusCodeResourceExhausted, ErrTooManyRequests)
 		seconds := retryAfter(ctx, resp)
 		if seconds == -1 {
+			addSpanError(span, trace.StatusCodeDeadlineExceeded, ErrTooManyRequests)
 			return response, ErrTooManyRequests
 		}
 
-		time.Sleep(time.Second * time.Duration(seconds))
-		return cms.search(ctx, parameters)
+		span.AddAttributes(trace.Int64Attribute("http.ratelimit_reset", int64(seconds)))
+
+		select {
+		case <-time.After(time.Second * time.Duration(seconds)):
+			return cms.search(ctx, parameters)
+		case <-ctx.Done():
+			addSpanError(span, trace.StatusCodeCancelled, err)
+			return response, ctx.Err()
+		}
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return response, fmt.Errorf("non-ok status code: %d", resp.StatusCode)
+		err = fmt.Errorf("non-ok status code: %d", resp.StatusCode)
+		addSpanError(span, trace.StatusCodeUnknown, err)
+		return response, err
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		addSpanError(span, trace.StatusCodeInternal, err)
+		return response, err
+	}
 
-	return response, err
+	return response, nil
 }
 
 func retryAfter(ctx context.Context, resp *http.Response) int {
