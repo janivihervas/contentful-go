@@ -8,7 +8,7 @@ machine:
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.11.1
+      - image: circleci/golang:1.11.2
     steps:
       - checkout
       - run:
@@ -21,11 +21,9 @@ jobs:
           keys:
             - v2-deps-{{ arch }}-{{ checksum "go.sum" }}
       - run:
-          name: Install
+          name: Install and update dependencies
           command: |
-            go mod tidy
-            make install
-            make setup
+            make update
             if [[ $CIRCLE_BRANCH != "master" ]]; then
               if [[ $(git status --porcelain) ]]; then
                 git add --all

@@ -143,6 +143,44 @@ fmt.Println(page.Banner.File.ContentType)
 fmt.Println(strings.Split(page.Banner.File.URL, "/")[2]) // Will be in the form of "//images.ctfassets.net/space.id/asset-id/some-id/orange.png"
 ```
 
+## Development
+
+Install dependencies and tools:
+
+```
+make install
+```
+
+Update dependencies and tools:
+
+```
+make update
+```
+
+Format:
+
+```
+make format
+```
+
+Lint:
+
+```
+make lint
+```
+
+Test:
+
+```
+make test
+```
+
+Run format, lint and tests:
+
+```
+make
+```
+
 ## License
 
 [MIT](LICENSE)
