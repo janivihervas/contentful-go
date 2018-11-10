@@ -65,6 +65,7 @@ unused:
 
 .PHONY: lint
 lint:
+#	Commented are the ones that don't support Go modules yet
 	@$(MAKE) -j \
 	vet \
 	golint \
@@ -72,14 +73,14 @@ lint:
 	nakedret \
 	gocyclo \
 	errcheck \
-	unconvert \
+#	unconvert \
 	\
 	structcheck \
 	varcheck \
-	\
-	gosimple \
-	staticcheck \
-	unused
+#	\
+#	gosimple \
+#	staticcheck \
+#	unused
 
 
 .PHONY: test
