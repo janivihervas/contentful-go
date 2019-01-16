@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/janivihervas/contentful-go/v2"
+	contentful "github.com/janivihervas/contentful-go/v2"
 )
 
 func Example() {
@@ -53,7 +53,7 @@ func Example() {
 		&pages,
 	)
 	if err != nil {
-		// handle error
+		panic(err)
 	}
 
 	// Returns exactly one entry
@@ -69,7 +69,7 @@ func Example() {
 		&page,
 	)
 	if err != nil {
-		// handle error
+		panic(err)
 	}
 
 	var resultPage Page
@@ -183,7 +183,7 @@ func ExampleContentful_GetMany() {
 
 	err := cms.GetMany(ctx, params, &pages)
 	if err != nil {
-		// handle error
+		panic(err)
 	}
 
 	var page Page
@@ -226,7 +226,7 @@ func ExampleContentful_GetOne() {
 
 	err := cms.GetOne(ctx, params, &page)
 	if err != nil {
-		// handle error
+		panic(err)
 	}
 
 	fmt.Println(page.Title)
@@ -267,7 +267,7 @@ func ExampleParameters() {
 
 	err = cms.GetOne(ctx, params, &page)
 	if err != nil {
-		// Handle error
+		panic(err)
 	}
 
 	fmt.Println(page.Title)
@@ -297,7 +297,7 @@ func ExampleInformation() {
 
 	err := cms.GetOne(ctx, params, &page)
 	if err != nil {
-		// Handle error
+		panic(err)
 	}
 
 	fmt.Println(page.ID)          // Or page.Information.ID
@@ -334,7 +334,7 @@ func ExampleAsset() {
 
 	err := cms.GetOne(ctx, params, &page)
 	if err != nil {
-		// Handle error
+		panic(err)
 	}
 
 	fmt.Println(page.Banner.Title)
@@ -376,7 +376,7 @@ func ExampleFile() {
 
 	err := cms.GetOne(ctx, params, &page)
 	if err != nil {
-		// Handle error
+		panic(err)
 	}
 
 	fmt.Println(page.Banner.File.FileName)
