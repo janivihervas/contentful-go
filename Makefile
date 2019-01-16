@@ -20,6 +20,8 @@ all: format lint test
 .PHONY: install install-new install-update
 install:
 	go mod download
+	go mod tidy -v
+	go get $(GO_TOOLS)
 	go mod verify
 install-new:
 	go get ./...
