@@ -8,7 +8,7 @@ machine:
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.11.2
+      - image: circleci/golang:1.11.4
     steps:
       - checkout
       - run:
@@ -24,7 +24,7 @@ jobs:
           name: Install and update dependencies
           command: |
             if [[ $CIRCLE_BRANCH != "master" ]]; then
-              make install
+              make install-update
               if [[ $(git status --porcelain) ]]; then
                 git add --all
                 git commit -m "AUTOMATIC BOT: Install"
