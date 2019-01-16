@@ -24,7 +24,7 @@ jobs:
           name: Install and update dependencies
           command: |
             if [[ $CIRCLE_BRANCH != "master" ]]; then
-              make install-update
+              make install
               if [[ $(git status --porcelain) ]]; then
                 git add --all
                 git commit -m "AUTOMATIC BOT: Install"
