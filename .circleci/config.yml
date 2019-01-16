@@ -23,12 +23,14 @@ jobs:
       - run:
           name: Install and update dependencies
           command: |
-            make update
             if [[ $CIRCLE_BRANCH != "master" ]]; then
+              make install-update
               if [[ $(git status --porcelain) ]]; then
                 git add --all
                 git commit -m "AUTOMATIC BOT: Install"
               fi
+            else
+              make install
             fi
       - save_cache:
           key: v2-deps-{{ arch }}-{{ checksum "go.sum" }}
