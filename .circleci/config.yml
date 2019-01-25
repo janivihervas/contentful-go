@@ -19,7 +19,7 @@ jobs:
             git config --global user.email $PUSHBACK_USER_EMAIL
       - restore_cache:
           keys:
-            - v2-deps-{{ arch }}-{{ checksum "go.sum" }}
+            - v2-deps-{{ arch }}-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
       - run:
           name: Install and update dependencies
           command: |
@@ -33,7 +33,7 @@ jobs:
               make install
             fi
       - save_cache:
-          key: v2-deps-{{ arch }}-{{ checksum "go.sum" }}
+          key: v2-deps-{{ arch }}-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
           paths:
             - /go/pkg/mod
       - run:
