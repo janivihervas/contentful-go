@@ -67,7 +67,6 @@ staticcheck:
 
 .PHONY: lint
 lint:
-#	Commented are the ones that don't support Go modules yet
 	@$(MAKE) -j \
 	vet \
 	golint \
@@ -79,7 +78,7 @@ lint:
 	\
 	structcheck \
 	varcheck \
-#	\
+	\
 	staticcheck
 
 
